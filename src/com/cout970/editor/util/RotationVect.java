@@ -30,12 +30,12 @@ public class RotationVect {
     }
 
     public Vect2d toVect2d(){
-        return new Vect2d(pitch, yaw);
+        return new Vect2d(yaw, pitch);
     }
 
     public void set(Vect2d rot){
-        pitch = (float) rot.getX();
-        yaw = (float) rot.getY();
+        yaw = (float) rot.getX();
+        pitch = (float) rot.getY();
     }
 
     public float getYawWrappedTo180() {

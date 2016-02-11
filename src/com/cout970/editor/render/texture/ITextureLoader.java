@@ -6,11 +6,11 @@ import java.nio.ByteBuffer;
 
 public interface ITextureLoader {
 
-	ITexture getTexture(ResourceFile path);
+	ITexture getTexture(ResourceReference path);
 	
-	ITexture loadTexture(ResourceFile resourceFile, String textureName);
+	ITexture loadTexture(ResourceReference resourceFile, String textureName);
 	
 	ITexture loadTexture(ByteBuffer imageBuffer, String textureName);
 	
-	ITextureAtlas generateTextureAtlas(ResourceFile folderPath, String name);
+	ITextureAtlas generateTextureAtlas(ResourceReference folderPath, String name);
 }

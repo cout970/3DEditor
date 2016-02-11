@@ -71,6 +71,12 @@ public class Vect2i {
         return this;
     }
 
+    public Vect2i multiply(Vect2i i) {
+        x *= i.getX();
+        y *= i.getY();
+        return this;
+    }
+
     public Vect2i add(Vect2i v) {
         x += v.x;
         y += v.y;
@@ -141,5 +147,11 @@ public class Vect2i {
         if (mag() * vec.mag() == 0)
             return 0;
         return Math.acos(copy().dotProduct(vec) / (mag() * vec.mag()));
+    }
+
+    public Vect2i division(int i) {
+        x /= i;
+        y /= i;
+        return this;
     }
 }

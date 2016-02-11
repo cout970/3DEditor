@@ -23,21 +23,21 @@ public class TextureManager implements ITextureLoader {
     public static final TextureManager INSTANCE = new TextureManager();
 
     private static String TEXTURE_DOMAIN_FOLDER = "." + File.separator + "res" + File.separator + "domains" + File.separator;
-    private List<ResourceFile> textureFiles;
-    private Map<ResourceFile, ITexture> registeredTextures;
+    private List<ResourceReference> textureFiles;
+    private Map<ResourceReference, ITexture> registeredTextures;
     private static int maxTextureSize = -1;
-    private String loadedTexture;
+    private int loadedTexture;
 
     public TextureManager() {
-        textureFiles = new LinkedList<ResourceFile>();
+        textureFiles = new LinkedList<ResourceReference>();
         registeredTextures = new HashMap<>();
     }
 
-    public void registerTexture(ResourceFile file, ITexture texture) {
+    public void registerTexture(ResourceReference file, ITexture texture) {
         registeredTextures.put(file, texture);
     }
 
-    public ITexture getTexture(ResourceFile path) {
+    public ITexture getTexture(ResourceReference path) {
         if (registeredTextures.containsKey(path)) {
             return registeredTextures.get(path);
         }
@@ -45,8 +45,8 @@ public class TextureManager implements ITextureLoader {
     }
 
     public void bind(ITexture tex) {
-        if (!tex.getTextureName().equalsIgnoreCase(loadedTexture)) {
-            loadedTexture = tex.getTextureName();
+        if (tex.getTextureID() != loadedTexture) {
+            loadedTexture = tex.getTextureID();
             glBindTexture(GL_TEXTURE_2D, tex.getTextureID());
         }
     }
@@ -56,11 +56,11 @@ public class TextureManager implements ITextureLoader {
     }
 
     public void bindForced(ITexture tex) {
-        loadedTexture = tex.getTextureName();
+        loadedTexture = tex.getTextureID();
         glBindTexture(GL_TEXTURE_2D, tex.getTextureID());
     }
 
-    public ITexture loadTexture(ResourceFile resourceFile, String textureName) {
+    public ITexture loadTexture(ResourceReference resourceFile, String textureName) {
         ByteBuffer buff;
 
         try {
@@ -114,7 +114,7 @@ public class TextureManager implements ITextureLoader {
         return texture;
     }
 
-    public ITextureAtlas generateTextureAtlas(ResourceFile resource, String name) {
+    public ITextureAtlas generateTextureAtlas(ResourceReference resource, String name) {
         searchForTextureFiles(resource);
         ITextureAtlas tex = combineTextures(textureFiles, name);
         registerTexture(resource, tex);
@@ -132,7 +132,7 @@ public class TextureManager implements ITextureLoader {
         return atlas;
     }
 
-    private void searchForTextureFiles(ResourceFile directory) {
+    private void searchForTextureFiles(ResourceReference directory) {
         File root = directory.getFile();
 
         textureFiles.clear();
@@ -148,7 +148,7 @@ public class TextureManager implements ITextureLoader {
                 String str = f.getPath().replace(TEXTURE_DOMAIN_FOLDER, "")
                         .replace(directory.getDomain() + File.separator, "");
                 textureFiles
-                        .add(new ResourceFile(directory.getDomain(), str, f.getName().replace(".png", "")));
+                        .add(new ResourceReference(directory.getDomain(), str, f.getName().replace(".png", "")));
             } else if (f.isDirectory()) {
                 for (File file : f.listFiles()) {
                     stack.push(file);
@@ -157,13 +157,13 @@ public class TextureManager implements ITextureLoader {
         }
     }
 
-    private ITextureAtlas combineTextures(List<ResourceFile> files, String name) {
+    private ITextureAtlas combineTextures(List<ResourceReference> files, String name) {
 
         AtlasBuilder atlas = createAtlas();
 
         // loading textures from the files
 
-        for (ResourceFile res : files) {
+        for (ResourceReference res : files) {
             try {
                 ByteBuffer imageBuffer = resourceToBuffer(res, -1);
                 ByteBuffer image;
@@ -244,7 +244,7 @@ public class TextureManager implements ITextureLoader {
         return -1;
     }
 
-    public ByteBuffer resourceToBuffer(ResourceFile resource, int bufferSize) throws IOException {
+    public ByteBuffer resourceToBuffer(ResourceReference resource, int bufferSize) throws IOException {
         ByteBuffer buffer;
 
         File file = new File(resource.getCompletePath());
@@ -264,7 +264,7 @@ public class TextureManager implements ITextureLoader {
             InputStream source = Thread.currentThread().getContextClassLoader()
                     .getResourceAsStream(resource.getCompletePath());
             if (source == null)
-                throw new FileNotFoundException(resource.getCompletePath());
+                throw new FileNotFoundException(resource.getCompletePath()+", "+resource.getFile().getAbsolutePath());
 
             try {
                 ReadableByteChannel rbc = Channels.newChannel(source);
