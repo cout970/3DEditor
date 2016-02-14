@@ -40,6 +40,12 @@ public class GLFWDisplay {
     //callbacks
     private static GLFWErrorCallback errorCallback;
     private static InputHandler.KeyboardCallback keyCallback;
+    private static InputHandler.MouseButtonCallback mouseButtonCallback;
+    private static InputHandler.MouseWheelCallback mouseWheelCallback;
+    private static InputHandler.MousePosCallback mousePosCallback;
+    private static WindowSizeCallback windowSizeCallback;
+    private static FrameBufferSizeCallback frameBufferSizeCallback;
+    private static InputHandler.CharCallback charCallback;
 
     //handlers
     public static Handler2D handler2D;
@@ -47,15 +53,22 @@ public class GLFWDisplay {
 
     private static Vect2i frameBufferSize;
 
+
     public static void run() {
         try {
             init();
             loop();
 
             glfwDestroyWindow(getWindow());
-            getKeyCallback().release();
         } finally {
             glfwTerminate();
+            keyCallback.release();
+            mouseButtonCallback.release();
+            mouseWheelCallback.release();
+            mousePosCallback.release();
+            windowSizeCallback.release();
+            frameBufferSizeCallback.release();
+            charCallback.release();
             getErrorCallback().release();
         }
     }
@@ -98,11 +111,12 @@ public class GLFWDisplay {
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(window, keyCallback = new InputHandler.KeyboardCallback());
-        glfwSetMouseButtonCallback(window, new InputHandler.MouseButtonCallback());
-        glfwSetScrollCallback(window, new InputHandler.MouseWheelCallback());
-        glfwSetCursorPosCallback(window, new InputHandler.MousePosCallback());
-        glfwSetWindowSizeCallback(window, new WindowSizeCallback());
-        glfwSetFramebufferSizeCallback(window, new FrameBufferSizeCallback());
+        glfwSetMouseButtonCallback(window, mouseButtonCallback = new InputHandler.MouseButtonCallback());
+        glfwSetScrollCallback(window, mouseWheelCallback = new InputHandler.MouseWheelCallback());
+        glfwSetCursorPosCallback(window, mousePosCallback = new InputHandler.MousePosCallback());
+        glfwSetWindowSizeCallback(window, windowSizeCallback = new WindowSizeCallback());
+        glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback = new FrameBufferSizeCallback());
+        glfwSetCharCallback(window, charCallback = new InputHandler.CharCallback());
 
         // Get the resolution of the primary monitor
         ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -179,10 +193,6 @@ public class GLFWDisplay {
         return window;
     }
 
-    public static InputHandler.KeyboardCallback getKeyCallback() {
-        return keyCallback;
-    }
-
     public static GLFWErrorCallback getErrorCallback() {
         return errorCallback;
     }
@@ -222,6 +232,7 @@ public class GLFWDisplay {
 //            Log.debug("x: "+x+", y: "+y);
             WIDTH = x;
             HEIGHT = y;
+            ASPECT_RATIO = (float) WIDTH / (float) HEIGHT;
         }
     }
 

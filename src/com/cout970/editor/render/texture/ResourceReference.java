@@ -1,5 +1,7 @@
 package com.cout970.editor.render.texture;
 
+import com.cout970.editor.Editor;
+
 import java.io.File;
 
 public class ResourceReference {
@@ -20,7 +22,7 @@ public class ResourceReference {
 	}
 	
 	public ResourceReference(String path){
-		this.domain = "voxel_reality";
+		this.domain = Editor.EDITOR_NAME.toLowerCase();
 		this.path = path;
 	}
 	

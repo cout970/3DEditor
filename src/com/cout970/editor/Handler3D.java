@@ -16,14 +16,11 @@ public class Handler3D implements InputHandler.IMouseWheelCallback {
 
     private ConfigurationFile config = ConfigurationFile.INSTANCE;
     private IRenderEngine engine = IRenderEngine.INSTANCE;
-    private RotationVect cameraRotation = new RotationVect(30, 45);
-    private Vect3d cameraTranslation = new Vect3d(1, -1, -1);
+    private RotationVect cameraRotation = new RotationVect(30, -45);
+    private Vect3d cameraTranslation = new Vect3d(-1, -1, -2);
     private static final double pixel = 1 / 16d;
-    private ModelTree modelTree;
 
     public Handler3D() {
-        modelTree = new ModelTree();
-        GLFWDisplay.handler2D.setModelTree(modelTree);
     }
 
     public void update() {
@@ -50,7 +47,7 @@ public class Handler3D implements InputHandler.IMouseWheelCallback {
             drawAxisGridY();
         }
         drawDebugLines();
-        modelTree.getAllModels().forEach(IModel::render);
+        ModelTree.INSTANCE.getAllModels().forEach(IModel::render);
         glPopMatrix();
     }
 
@@ -139,11 +136,13 @@ public class Handler3D implements InputHandler.IMouseWheelCallback {
 
     @Override
     public void onWheelMoves(double amount) {
-        Vect3d a = new Vect3d(0, 0, 1);
-        a.rotateX(Math.toRadians(cameraRotation.getPitch()));
-        a.rotateY(Math.toRadians(180 - cameraRotation.getYaw()));
-        a.normalize().multiply(-amount * pixel);
-        cameraTranslation.add(a);
+        if(!GLFWDisplay.handler2D.getGui().blockMouseWheel()) {
+            Vect3d a = new Vect3d(0, 0, 1);
+            a.rotateX(Math.toRadians(cameraRotation.getPitch()));
+            a.rotateY(Math.toRadians(180 - cameraRotation.getYaw()));
+            a.normalize().multiply(-amount * pixel);
+            cameraTranslation.add(a);
+        }
     }
 
     private Vect3d getLookVector() {

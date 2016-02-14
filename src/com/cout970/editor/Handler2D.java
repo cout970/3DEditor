@@ -1,16 +1,12 @@
 package com.cout970.editor;
 
-import com.cout970.editor.gui.Component;
-import com.cout970.editor.gui.DynamicPanel;
-import com.cout970.editor.model.TechneCube;
+import com.cout970.editor.gui.Gui;
+import com.cout970.editor.gui.TopBar;
+import com.cout970.editor.gui.windows.CubeEditWindow;
 import com.cout970.editor.render.engine.IRenderEngine;
 import com.cout970.editor.render.texture.TextureStorage;
-import com.cout970.editor.util.Color;
-import com.cout970.editor.util.Vect2d;
 import com.cout970.editor.util.Vect2i;
-import com.cout970.editor.util.Vect3d;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
 import static org.lwjgl.opengl.GL11.GL_QUADS;
 
 /**
@@ -22,11 +18,15 @@ public class Handler2D implements InputHandler.IKeyboardCallback {
     private IRenderEngine engine = IRenderEngine.INSTANCE;
     private Vect2i size = GLFWDisplay.getFrameBufferSize().copy();
     private Vect2i center = GLFWDisplay.getFrameBufferSize().copy().division(2);
-    private ModelTree modelTree;
-    private Component panel;
+    private Gui gui;
+    private TopBar topBar;
 
     public void init(){
-        panel = new DynamicPanel(Vect2d.nullVector(), new Vect2d(20,100), new Color(0x666666));
+        gui = new Gui();
+        gui.addComponent(new CubeEditWindow());
+        gui.addComponent(topBar = new TopBar());
+        topBar.init();
+        ModelTree.INSTANCE.init();
     }
 
     public void update() {
@@ -35,7 +35,7 @@ public class Handler2D implements InputHandler.IKeyboardCallback {
         if (InputHandler.isMouseButtonPress(InputHandler.MouseButton.MIDDLE) || InputHandler.isMouseButtonPress(InputHandler.MouseButton.RIGHT)) {
             drawCenter();
         }
-        panel.updateAndRender();
+        gui.render();
     }
 
     private void drawCenter() {
@@ -57,23 +57,18 @@ public class Handler2D implements InputHandler.IKeyboardCallback {
     public void onResize() {
         size = GLFWDisplay.getFrameBufferSize().copy();
         center = GLFWDisplay.getFrameBufferSize().copy().division(2);
-    }
-
-    public void setModelTree(ModelTree modelTree) {
-        this.modelTree = modelTree;
+        gui.onResize();
     }
 
     @Override
-    public void onKeyPress(int key, int action) {
-        if (action == 1) {
-            switch (key) {
-                case GLFW_KEY_A:
-                    modelTree.addModel(new TechneCube("base", new Vect3d(0, -1, 0), new Vect3d(16, 16, 16), TextureStorage.CUBE, new Vect2d(0, 0), 16));
-            }
-        }
+    public void onKeyPress(int key, int code, int action) {
     }
 
     public Vect2i getScreenSize() {
         return size.copy();
+    }
+
+    public Gui getGui() {
+        return gui;
     }
 }

@@ -7,6 +7,9 @@ public class TextureStorage {
 	public static ITexture MISSING_TEXTURE;
 	public static ITexture CUBE;
 	public static ITexture CENTER;
+	public static ITexture BUTTONS;
+	public static ITexture FONT;
+
 	private TextureStorage() {}
 
 	public void reloadTextures(String domain) {
@@ -18,5 +21,9 @@ public class TextureStorage {
 				"cube");
 		CENTER = TextureManager.INSTANCE.loadTexture(new ResourceReference(domain, "textures/center.png"),
 				"center");
+		BUTTONS = TextureManager.INSTANCE.loadTexture(new ResourceReference(domain, "textures/buttons.png"),
+				"button");
+		FONT = TextureManager.INSTANCE.loadTexture(new ResourceReference(domain, "fonts/oldfont.png"),
+				"font");
 	}
 }

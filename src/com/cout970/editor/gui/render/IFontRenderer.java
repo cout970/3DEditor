@@ -5,8 +5,6 @@ package com.cout970.editor.gui.render;
  */
 public interface IFontRenderer {
 
-    IFontRenderer INSTANCE = new FontRenderer();
-
     int drawStringWithShadow(String text, float x, float y, int color);
 
     int drawString(String text, int x, int y, int color);

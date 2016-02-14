@@ -1,7 +1,12 @@
 package com.cout970.editor;
 
 import com.cout970.editor.model.IModel;
+import com.cout970.editor.model.TechneCube;
+import com.cout970.editor.render.texture.TextureStorage;
+import com.cout970.editor.util.Vect2d;
+import com.cout970.editor.util.Vect3d;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,13 +15,41 @@ import java.util.List;
  */
 public class ModelTree {
 
+    public static final ModelTree INSTANCE = new ModelTree();
+    private IModel modelBase;
     private List<IModel> models = new LinkedList<>();
+    private List<IModel> selectedModels = new LinkedList<>();
+
+    private ModelTree() {}
 
     public List<IModel> getAllModels() {
-        return models;
+        List<IModel> list = new ArrayList<>(models.size() + 1);
+        list.addAll(models);
+        list.add(modelBase);
+        return list;
     }
 
     public void addModel(IModel m) {
         models.add(m);
+    }
+
+    public List<IModel> getSelectedModels() {
+        return selectedModels;
+    }
+
+    public void addModelToSelection(IModel m){
+        selectedModels.add(m);
+    }
+
+    public void removeModelToSelection(IModel m){
+        selectedModels.remove(m);
+    }
+
+    public void clearSelection(){
+        selectedModels.clear();
+    }
+
+    public void init() {
+        modelBase = new TechneCube("base", new Vect3d(0, -1, 0), new Vect3d(16, 16, 16), TextureStorage.CUBE, new Vect2d(0, 0), 16);
     }
 }

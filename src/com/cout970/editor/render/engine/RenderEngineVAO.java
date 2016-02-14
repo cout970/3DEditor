@@ -184,7 +184,8 @@ public class RenderEngineVAO implements IRenderEngine {
 	@Override
 	public void setColor(int rgb, float alpha) {
 		useColor = true;
-		color = ((int) (alpha * 0xFF) << 24) | rgb;
+		int auxRgb = (rgb & 0xFF) << 16 | (rgb & 0xFF00) | (rgb & 0xFF0000) >>> 16;
+		color = ((int) (alpha * 0xFF) << 24) | auxRgb;
 	}
 
 	@Override

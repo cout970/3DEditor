@@ -244,7 +244,7 @@ public class TextureManager implements ITextureLoader {
         return -1;
     }
 
-    public ByteBuffer resourceToBuffer(ResourceReference resource, int bufferSize) throws IOException {
+    public static ByteBuffer resourceToBuffer(ResourceReference resource, int bufferSize) throws IOException {
         ByteBuffer buffer;
 
         File file = new File(resource.getCompletePath());

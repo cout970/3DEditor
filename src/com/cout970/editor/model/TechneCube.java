@@ -153,9 +153,7 @@ public class TechneCube implements IModel {
     }
 
     public List<Quad> getQuads() {
-        if (quadList == null) {
-            createQuads();
-        }
+        createQuads();
         return Arrays.asList(quadList);
     }
 
@@ -188,8 +186,8 @@ public class TechneCube implements IModel {
         IRenderEngine eng = IRenderEngine.INSTANCE;
         texture.bind();
         eng.startDrawing(GL11.GL_QUADS);
-        for(Quad q : getQuads()){
-            for(QuadVertex v : QuadVertex.values()) {
+        for (Quad q : getQuads()) {
+            for (QuadVertex v : QuadVertex.values()) {
                 Vect2d uv = q.getUV(v);
                 Vect3d ve = q.getVertex(v);
                 eng.addTextureUV(uv.getX(), uv.getY());
