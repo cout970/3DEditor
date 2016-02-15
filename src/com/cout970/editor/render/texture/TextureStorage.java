@@ -9,6 +9,7 @@ public class TextureStorage {
 	public static ITexture CENTER;
 	public static ITexture BUTTONS;
 	public static ITexture FONT;
+	public static ITexture MODEL_TEXTURE;
 
 	private TextureStorage() {}
 
@@ -25,5 +26,6 @@ public class TextureStorage {
 				"button");
 		FONT = TextureManager.INSTANCE.loadTexture(new ResourceReference(domain, "fonts/oldfont.png"),
 				"font");
+		MODEL_TEXTURE = MISSING_TEXTURE;
 	}
 }

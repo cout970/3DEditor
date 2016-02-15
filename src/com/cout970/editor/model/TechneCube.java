@@ -184,9 +184,14 @@ public class TechneCube implements IModel {
     @Override
     public void render() {
         IRenderEngine eng = IRenderEngine.INSTANCE;
+        float[] f1 = {0.9f, 0.8f, 0.5f, 0.7f, 0.6f, 0.4f};
+        int i = 0;
         texture.bind();
         eng.startDrawing(GL11.GL_QUADS);
         for (Quad q : getQuads()) {
+            float f = f1[i];
+            i++;
+            eng.setColor(f, f, f, 1f);
             for (QuadVertex v : QuadVertex.values()) {
                 Vect2d uv = q.getUV(v);
                 Vect3d ve = q.getVertex(v);
@@ -195,6 +200,42 @@ public class TechneCube implements IModel {
             }
         }
         eng.endDrawing();
+    }
+
+    public void setCubeName(String buffer) {
+        name = buffer;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCubePos(Vect3d cubePos) {
+        this.cubePos = cubePos;
+    }
+
+    public void setCubeSize(Vect3d cubeSize) {
+        this.cubeSize = cubeSize;
+    }
+
+    public void setTexture(ITexture texture) {
+        this.texture = texture;
+    }
+
+    public void setTextureOffset(Vect2d textureOffset) {
+        this.textureOffset = textureOffset;
+    }
+
+    public void setTextureSize(int textureSize) {
+        this.textureSize = textureSize;
+    }
+
+    public Vect3d getRotation() {
+        return rotation;
+    }
+
+    public Vect3d getOffset() {
+        return offset;
     }
 
     private class Vertex {

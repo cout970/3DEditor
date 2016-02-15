@@ -132,8 +132,6 @@ public class GLFWDisplay {
         // Make the window visible
         glfwShowWindow(window);
 
-//        StateManager.INSTANCE.changeState(new GameStateLoading());
-
         GL.createCapabilities();
         IntBuffer width = BufferUtils.createIntBuffer(1), height = BufferUtils.createIntBuffer(1);
         glfwGetFramebufferSize(window, width, height);

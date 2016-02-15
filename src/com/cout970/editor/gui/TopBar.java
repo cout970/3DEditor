@@ -1,13 +1,18 @@
 package com.cout970.editor.gui;
 
 import com.cout970.editor.InputHandler;
+import com.cout970.editor.ModelTree;
 import com.cout970.editor.gui.components.AbstractButton;
 import com.cout970.editor.gui.components.AbstractStateButton;
 import com.cout970.editor.gui.components.SimpleButton;
 import com.cout970.editor.gui.render.IGuiRenderer;
+import com.cout970.editor.model.IModel;
+import com.cout970.editor.model.TechneCube;
 import com.cout970.editor.render.texture.TextureStorage;
 import com.cout970.editor.util.Color;
+import com.cout970.editor.util.Vect2d;
 import com.cout970.editor.util.Vect2i;
+import com.cout970.editor.util.Vect3d;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +29,16 @@ public class TopBar implements IGuiComponent {
         buttons.add(new SimpleButton(Vect2i.nullVector(), new Vect2i(80, BAR_HEIGHT-2), TextureStorage.BUTTONS, "File", this::onPress, this::uvMapFile).setId(0));
         buttons.add(new SimpleButton(new Vect2i(80, 0), new Vect2i(80, BAR_HEIGHT-2), TextureStorage.BUTTONS, "Editor", this::onPress, this::uvMapFile).setId(1));
         buttons.add(new SimpleButton(new Vect2i(80*2, 0), new Vect2i(80, BAR_HEIGHT-2), TextureStorage.BUTTONS, "Help", this::onPress, this::uvMapFile).setId(2));
-        buttons.add(new SimpleButton(new Vect2i(80*3, 0), new Vect2i(BAR_HEIGHT-2, BAR_HEIGHT-2), TextureStorage.BUTTONS, this::onPress, this::uvMapFile).setId(3));
+        buttons.add(new SimpleButton(new Vect2i(80*3, 0), new Vect2i(BAR_HEIGHT-2, BAR_HEIGHT-2), TextureStorage.BUTTONS, this::onPress, this::uvMapAddCube).setId(3));
     }
 
     public boolean onPress(AbstractButton button, Vect2i mouse, InputHandler.MouseButton mouseButton){
+        if(button.getId() == 3){
+            ModelTree.INSTANCE.clearSelection();
+            IModel m = new TechneCube("Shape1", new Vect3d(0,0,0), new Vect3d(1,1,1), TextureStorage.MODEL_TEXTURE, new Vect2d(0,0), 16);
+            ModelTree.INSTANCE.addModel(m);
+            ModelTree.INSTANCE.addModelToSelection(m);
+        }
         return false;
     }
 
@@ -35,6 +46,13 @@ public class TopBar implements IGuiComponent {
         if (state == AbstractStateButton.ButtonState.NORMAL) return new Vect2i(16, 0);
         if (state == AbstractStateButton.ButtonState.HOVER) return new Vect2i(16, BAR_HEIGHT-2);
         if (state == AbstractStateButton.ButtonState.DOWN) return new Vect2i(16, (BAR_HEIGHT-2)*2);
+        return Vect2i.nullVector();
+    }
+
+    public Vect2i uvMapAddCube(AbstractStateButton.ButtonState state){
+        if (state == AbstractStateButton.ButtonState.NORMAL) return new Vect2i(16, 69);
+        if (state == AbstractStateButton.ButtonState.HOVER) return new Vect2i(16, 69+BAR_HEIGHT-2);
+        if (state == AbstractStateButton.ButtonState.DOWN) return new Vect2i(16, 69+(BAR_HEIGHT-2)*2);
         return Vect2i.nullVector();
     }
 

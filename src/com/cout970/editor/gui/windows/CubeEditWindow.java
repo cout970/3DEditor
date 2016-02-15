@@ -1,13 +1,16 @@
 package com.cout970.editor.gui.windows;
 
+import com.cout970.editor.ModelTree;
 import com.cout970.editor.gui.IGui;
 import com.cout970.editor.gui.components.CubeNameTextBox;
 import com.cout970.editor.gui.components.NumberEdit;
 import com.cout970.editor.gui.components.RotationBar;
 import com.cout970.editor.gui.components.TextBox;
+import com.cout970.editor.model.IModel;
 import com.cout970.editor.model.TechneCube;
 import com.cout970.editor.util.Color;
 import com.cout970.editor.util.Vect2i;
+import com.cout970.editor.util.Vect3d;
 
 /**
  * Created by cout970 on 12/02/2016.
@@ -15,6 +18,7 @@ import com.cout970.editor.util.Vect2i;
 public class CubeEditWindow extends InternalWindow {
 
     private TechneCube cubeModel;
+    private static final double pixel = 0.0625d;
 
     private TextBox cubeName;
 
@@ -68,12 +72,36 @@ public class CubeEditWindow extends InternalWindow {
     public void renderBackground(IGui gui, Vect2i mouse, float partialTicks) {
         super.renderBackground(gui, mouse, partialTicks);
         if (!hide) {
+            if (ModelTree.INSTANCE.getSelectedModels().size() == 1 && cubeModel != ModelTree.INSTANCE.getSelectedModels().get(0)) {
+                loadModel(ModelTree.INSTANCE.getSelectedModels().get(0));
+            }
+            if (cubeModel != null) {
+                updateModel(cubeModel);
+            }
             gui.getGuiRenderer().drawString("Cube Name", getPos().add(2, 16), new Color(0));
             gui.getGuiRenderer().drawString("Cube Size", getPos().add(2, 46), new Color(0));
             gui.getGuiRenderer().drawString("Cube Position", getPos().add(2, 76), new Color(0));
             gui.getGuiRenderer().drawString("Rotation Point", getPos().add(2, 106), new Color(0));
             gui.getGuiRenderer().drawString("Rotation", getPos().add(2, 136), new Color(0));
 
+        }
+    }
+
+    private void updateModel(TechneCube m) {
+        m.setCubeName(cubeName.getBuffer());
+        m.setCubePos(new Vect3d(cubePosX.getValue() * pixel, cubePosY.getValue() * pixel, cubePosZ.getValue() * pixel));
+        m.setCubeSize(new Vect3d(cubeSizeX.getValue(), cubeSizeY.getValue(), cubeSizeZ.getValue()));
+        m.setRotation(new Vect3d(Math.toRadians(cubeRotationX.getValue()), Math.toRadians(cubeRotationY.getValue()), Math.toRadians(cubeRotationZ.getValue())));
+    }
+
+    private void loadModel(IModel iModel) {
+        if (iModel instanceof TechneCube) {
+            TechneCube m = (TechneCube) iModel;
+            cubeModel = m;
+            cubeName.setBuffer(m.getName());
+            cubeSizeX.setValue(m.getCubeSize().getX());
+            cubeSizeY.setValue(m.getCubeSize().getY());
+            cubeSizeZ.setValue(m.getCubeSize().getZ());
         }
     }
 }
