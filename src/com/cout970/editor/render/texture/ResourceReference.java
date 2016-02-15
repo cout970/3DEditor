@@ -1,26 +1,28 @@
 package com.cout970.editor.render.texture;
 
+import com.cout970.editor.Editor;
+
 import java.io.File;
 
-public class ResourceFile {
+public class ResourceReference {
 
 	private String domain;
 	private String path;
 	private String fileName;
 	
-	public ResourceFile(String domain, String path, String fileName){
+	public ResourceReference(String domain, String path, String fileName){
 		this.domain = domain;
 		this.path = path;
 		this.fileName = fileName;
 	}
 	
-	public ResourceFile(String domain, String path){
+	public ResourceReference(String domain, String path){
 		this.domain = domain;
 		this.path = path;
 	}
 	
-	public ResourceFile(String path){
-		this.domain = "voxel_reality";
+	public ResourceReference(String path){
+		this.domain = Editor.EDITOR_NAME.toLowerCase();
 		this.path = path;
 	}
 	
@@ -36,7 +38,7 @@ public class ResourceFile {
 		return fileName;
 	}
 	
-	public ResourceFile setFileName(String name){
+	public ResourceReference setFileName(String name){
 		fileName = name;
 		return this;
 	}
@@ -50,7 +52,7 @@ public class ResourceFile {
 	}
 
 	public String getCompletePath() {
-		return "./res/domains/"+domain+"/"+path;
+		return "./domains/"+domain+"/"+path;
 	}
 
 	@Override
@@ -70,7 +72,7 @@ public class ResourceFile {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ResourceFile other = (ResourceFile) obj;
+		ResourceReference other = (ResourceReference) obj;
 		if (domain == null) {
 			if (other.domain != null)
 				return false;

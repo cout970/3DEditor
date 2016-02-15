@@ -71,6 +71,12 @@ public class Vect2d {
         return this;
     }
 
+    public Vect2d multiply(Vect2d i) {
+        x *= i.getX();
+        y *= i.getY();
+        return this;
+    }
+
     public Vect2d add(Vect2d v) {
         x += v.x;
         y += v.y;

@@ -1,9 +1,13 @@
 package com.cout970.editor;
 
+import com.cout970.editor.render.texture.TextureStorage;
 import com.cout970.editor.util.LoopTimer;
+import com.cout970.editor.util.Vect2i;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.glfw.GLFWvidmode;
 import org.lwjgl.opengl.GL;
 
@@ -12,7 +16,6 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.Callbacks.errorCallbackPrint;
-import static org.lwjgl.glfw.Callbacks.glfwSetCallback;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -29,18 +32,27 @@ public class GLFWDisplay {
     private static float zNEAR = 0.1f;
     private static float zFAR = 1000f;
     private static long window;
+    private static boolean init = false;
     //timer
     public static final LoopTimer counter = new LoopTimer();
     private static double delta;
     private static double time;
     //callbacks
     private static GLFWErrorCallback errorCallback;
-    private static InputHandler.GLFWKeyboardCallback keyCallback;
-    private static InputHandler.GLFWMouseCallback mouseCallback;
+    private static InputHandler.KeyboardCallback keyCallback;
+    private static InputHandler.MouseButtonCallback mouseButtonCallback;
+    private static InputHandler.MouseWheelCallback mouseWheelCallback;
+    private static InputHandler.MousePosCallback mousePosCallback;
+    private static WindowSizeCallback windowSizeCallback;
+    private static FrameBufferSizeCallback frameBufferSizeCallback;
+    private static InputHandler.CharCallback charCallback;
 
     //handlers
     public static Handler2D handler2D;
     public static Handler3D handler3D;
+
+    private static Vect2i frameBufferSize;
+
 
     public static void run() {
         try {
@@ -48,9 +60,15 @@ public class GLFWDisplay {
             loop();
 
             glfwDestroyWindow(getWindow());
-            getKeyCallback().release();
         } finally {
             glfwTerminate();
+            keyCallback.release();
+            mouseButtonCallback.release();
+            mouseWheelCallback.release();
+            mousePosCallback.release();
+            windowSizeCallback.release();
+            frameBufferSizeCallback.release();
+            charCallback.release();
             getErrorCallback().release();
         }
     }
@@ -59,12 +77,13 @@ public class GLFWDisplay {
 
         while (glfwWindowShouldClose(getWindow()) == GL_FALSE) {
             counter.loopTick();
+
             delta = glfwGetTime() - time;
             time = glfwGetTime();
 
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-            //render code goes here
+            //updateAndRender code goes here
             InputHandler.updateCursor(true);
             handler3D.update();
             handler2D.update();
@@ -91,8 +110,13 @@ public class GLFWDisplay {
             throw new RuntimeException("Failed to create the GLFW window");
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
-        glfwSetKeyCallback(window, keyCallback = new InputHandler.GLFWKeyboardCallback());
-        glfwSetCallback(window, mouseCallback = new InputHandler.GLFWMouseCallback());
+        glfwSetKeyCallback(window, keyCallback = new InputHandler.KeyboardCallback());
+        glfwSetMouseButtonCallback(window, mouseButtonCallback = new InputHandler.MouseButtonCallback());
+        glfwSetScrollCallback(window, mouseWheelCallback = new InputHandler.MouseWheelCallback());
+        glfwSetCursorPosCallback(window, mousePosCallback = new InputHandler.MousePosCallback());
+        glfwSetWindowSizeCallback(window, windowSizeCallback = new WindowSizeCallback());
+        glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback = new FrameBufferSizeCallback());
+        glfwSetCharCallback(window, charCallback = new InputHandler.CharCallback());
 
         // Get the resolution of the primary monitor
         ByteBuffer vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -119,14 +143,21 @@ public class GLFWDisplay {
 
         glViewport(0, 0, WIDTH, HEIGHT);
         glClear(GL_COLOR_BUFFER_BIT);
+        glEnable(GL_TEXTURE_2D);
 
         set3D();
 
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClearColor(0.89f, 0.882f, 0.867f, 1.0f);
 //        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         handler2D = new Handler2D();
         handler3D = new Handler3D();
+
+        InputHandler.registerMouseWheelCallback(handler3D);
+        InputHandler.registerKeyboardCallback(handler2D);
+        TextureStorage.INSTANCE.reloadTextures(Editor.EDITOR_NAME.toLowerCase());
+        handler2D.init();
+        init = true;
     }
 
     public static void set3D() {
@@ -162,14 +193,9 @@ public class GLFWDisplay {
         return window;
     }
 
-    public static InputHandler.GLFWKeyboardCallback getKeyCallback() {
-        return keyCallback;
-    }
-
     public static GLFWErrorCallback getErrorCallback() {
         return errorCallback;
     }
-
 
     public static int getWindowWidth() {
         return WIDTH;
@@ -179,19 +205,47 @@ public class GLFWDisplay {
         return HEIGHT;
     }
 
+    public static Vect2i getFrameBufferSize() {
+        return frameBufferSize;
+    }
+
     public static void terminate() {
         glfwSetWindowShouldClose(getWindow(), GL_TRUE);
     }
 
     public static double getDeltaNano() {
-        return delta / 1E6;
+        return delta * 1E6;
     }
 
     public static double getDeltaMili() {
-        return delta / 1E3;
+        return delta * 1E3;
     }
 
     public static double getDeltaSec() {
         return delta;
+    }
+
+    private static class WindowSizeCallback extends GLFWWindowSizeCallback {
+
+        @Override
+        public void invoke(long window, int x, int y) {
+//            Log.debug("x: "+x+", y: "+y);
+            WIDTH = x;
+            HEIGHT = y;
+            ASPECT_RATIO = (float) WIDTH / (float) HEIGHT;
+        }
+    }
+
+    private static class FrameBufferSizeCallback extends GLFWFramebufferSizeCallback {
+
+        @Override
+        public void invoke(long window, int x, int y) {
+//            Log.debug("x: " + x + ", y: " + y);
+            frameBufferSize = new Vect2i(x,y);
+            if (init) {
+                glViewport(0, 0, x, y);
+                handler2D.onResize();
+            }
+        }
     }
 }

@@ -1,8 +1,5 @@
 package com.cout970.editor.render.engine;
 
-import com.cout970.editor.render.texture.ITexture;
-import com.cout970.editor.render.texture.TextureManager;
-import com.cout970.editor.render.texture.TextureStorage;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -187,7 +184,8 @@ public class RenderEngineVAO implements IRenderEngine {
 	@Override
 	public void setColor(int rgb, float alpha) {
 		useColor = true;
-		color = ((int) (alpha * 0xFF) << 24) | rgb;
+		int auxRgb = (rgb & 0xFF) << 16 | (rgb & 0xFF00) | (rgb & 0xFF0000) >>> 16;
+		color = ((int) (alpha * 0xFF) << 24) | auxRgb;
 	}
 
 	@Override
@@ -268,22 +266,22 @@ public class RenderEngineVAO implements IRenderEngine {
 
 	@Override
 	public void enableLight() {
-		GL13.glClientActiveTexture(GL13.GL_TEXTURE1);
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		ITexture tex = TextureStorage.LIGHT_MAP;
-		TextureManager.INSTANCE.bindForced(tex);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-		GL11.glColor4f(1, 1, 1, 1);
-        GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
+//		GL13.glClientActiveTexture(GL13.GL_TEXTURE1);
+//		GL11.glEnable(GL11.GL_TEXTURE_2D);
+//		ITexture tex = TextureStorage.LIGHT_MAP;
+//		TextureManager.INSTANCE.bindForced(tex);
+//		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+//		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+//		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+//		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+//		GL11.glColor4f(1, 1, 1, 1);
+//        GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
 	}
 
 	@Override
 	public void disableLight() {
-		GL13.glClientActiveTexture(GL13.GL_TEXTURE1);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
+//		GL13.glClientActiveTexture(GL13.GL_TEXTURE1);
+//		GL11.glDisable(GL11.GL_TEXTURE_2D);
+//		GL13.glClientActiveTexture(GL13.GL_TEXTURE0);
 	}
 }

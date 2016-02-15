@@ -1,7 +1,8 @@
 package com.cout970.editor;
 
+import com.cout970.editor.model.IModel;
 import com.cout970.editor.render.engine.IRenderEngine;
-import com.cout970.editor.util.Log;
+import com.cout970.editor.render.texture.TextureStorage;
 import com.cout970.editor.util.RotationVect;
 import com.cout970.editor.util.Vect2d;
 import com.cout970.editor.util.Vect3d;
@@ -11,89 +12,143 @@ import static org.lwjgl.opengl.GL11.*;
 /**
  * Created by cout970 on 10/02/2016.
  */
-public class Handler3D {
+public class Handler3D implements InputHandler.IMouseWheelCallback {
 
     private ConfigurationFile config = ConfigurationFile.INSTANCE;
     private IRenderEngine engine = IRenderEngine.INSTANCE;
-    private RotationVect cameraRotation = new RotationVect(0, 0);
-    private Vect3d cameraTranslation = new Vect3d(0, 0, 0);
+    private RotationVect cameraRotation = new RotationVect(30, -45);
+    private Vect3d cameraTranslation = new Vect3d(-1, -1, -2);
+    private static final double pixel = 1 / 16d;
+
+    public Handler3D() {
+    }
 
     public void update() {
+        GLFWDisplay.set3D();
+        TextureStorage.EMPTY.bind();
         glPushMatrix();
+        glLoadIdentity();
         handleCursor();
-        glRotatef(cameraRotation.getYaw(), 0, 1, 0);
-        glRotatef(cameraRotation.getPitch(), 1, 0, 0);
-        glRotatef(cameraRotation.getPitch(), 0, 0, 1);
-        glTranslated(cameraTranslation.getX(), cameraTranslation.getY(), cameraTranslation.getZ());
+
+        if (config.camaraController == 0) {
+            Vect3d rotP = new Vect3d(0, 0, 1);
+            glTranslated(-rotP.getX(), -rotP.getY(), -rotP.getZ());
+            glRotatef(cameraRotation.getPitch(), 1, 0, 0);
+            glRotatef(cameraRotation.getYaw(), 0, 1, 0);
+            glTranslated(rotP.getX(), rotP.getY(), rotP.getZ());
+            glTranslated(cameraTranslation.getX(), cameraTranslation.getY(), cameraTranslation.getZ());
+        } else if (config.camaraController == 1) {
+            glRotatef(cameraRotation.getPitch(), 1, 0, 0);
+            glRotatef(cameraRotation.getYaw(), 0, 1, 0);
+            glTranslated(cameraTranslation.getX(), cameraTranslation.getY(), cameraTranslation.getZ());
+        }
 
         if (config.showAxisGridY) {
             drawAxisGridY();
         }
         drawDebugLines();
+        ModelTree.INSTANCE.getAllModels().forEach(IModel::render);
         glPopMatrix();
     }
 
     private void handleCursor() {
         if (InputHandler.isMouseButtonPress(InputHandler.MouseButton.MIDDLE)) {
-            Vect3d rot;
-            rot = new Vect3d(Math.cos(Math.toRadians(cameraRotation.getYaw())), Math.cos(Math.toRadians(cameraRotation.getPitch())), Math.sin(Math.toRadians(cameraRotation.getYaw())));
-//            rot = new Vect3d(1,0,0);
-            rot.normalize();
-            Log.debug(rot);
-            rot.multiply(new Vect3d(-InputHandler.getCursorDiffX() * 0.15D, InputHandler.getCursorDiffY() * 0.15D, -InputHandler.getCursorDiffX() * 0.15D));
-            cameraTranslation.add(rot);
-        } else if (InputHandler.isMouseButtonPress(InputHandler.MouseButton.RIGHT)) {
-            Vect2d rotation = cameraRotation.toVect2d();
-            rotation.add(InputHandler.getCursorDiffY() * -0.15D, InputHandler.getCursorDiffX() * -0.15D);
-            if (rotation.getX() > 90)
-                rotation.set(90, rotation.getY());
-            if (rotation.getX() < -90)
-                rotation.set(-90, rotation.getY());
 
-            if (rotation.getY() > 360)
-                rotation.add(0, -360);
-            if (rotation.getY() < 0)
-                rotation.add(0, 360);
+            Vect2d axisX = new Vect2d(Math.cos(Math.toRadians(cameraRotation.getYaw())), Math.sin(Math.toRadians(cameraRotation.getYaw())));
+            Vect2d axisY = new Vect2d(Math.cos(Math.toRadians(cameraRotation.getYaw() - 90)), Math.sin(Math.toRadians(cameraRotation.getYaw() - 90)));
+            axisY.multiply(Math.sin(Math.toRadians(cameraRotation.getPitch())));
+            Vect3d a = new Vect3d(axisX.getX(), 0, axisX.getY());
+            Vect3d b = new Vect3d(axisY.getX(), Math.cos(Math.toRadians(cameraRotation.getPitch())), axisY.getY());
+            a.normalize().multiply(-InputHandler.getCursorDiffX() * config.translationSpeedX * GLFWDisplay.getDeltaSec());
+            b.normalize().multiply(InputHandler.getCursorDiffY() * config.translationSpeedY * GLFWDisplay.getDeltaSec());
+            cameraTranslation.add(a);
+            cameraTranslation.add(b);
+
+        } else if (InputHandler.isMouseButtonPress(InputHandler.MouseButton.RIGHT)) {
+
+            Vect2d rotation = cameraRotation.toVect2d();
+            rotation.add(-InputHandler.getCursorDiffX() * config.rotationSpeedX * GLFWDisplay.getDeltaSec(), -InputHandler.getCursorDiffY() * config.rotationSpeedY * GLFWDisplay.getDeltaSec());
             cameraRotation.set(rotation);
         }
     }
 
     private void drawAxisGridY() {
-        engine.setColorOpaque(0xFFFFFF);
-        int lenght = 5;
+        int lenght = 3;
+        glLineWidth(1.5f);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_DST_ALPHA);
         engine.startDrawing(GL_LINES);
-        for (int i = 0; i <= 16*lenght; i++) {
-            engine.addVertex(i, 0, 0);
-            engine.addVertex(i, 0, lenght*16);
+        engine.setColor(0x979694, 0.5f);
+        for (int i = -16 * lenght - 2; i <= 16 * (lenght + 1) + 2; i++) {
+            if (i % 16 == 0) {
+                continue;
+            }
+            engine.addVertex(i * pixel, 0, (-lenght * 16 - 2) * pixel);
+            engine.addVertex(i * pixel, 0, ((lenght + 1) * 16 + 2) * pixel);
         }
-        for (int i = 0; i <= 16*lenght; i++) {
-            engine.addVertex(0, 0, i);
-            engine.addVertex(lenght*16, 0, i);
+        for (int i = -16 * lenght - 2; i <= 16 * (lenght + 1) + 2; i++) {
+            if (i % 16 == 0) {
+                continue;
+            }
+            engine.addVertex((-lenght * 16 - 2) * pixel, 0, i * pixel);
+            engine.addVertex(((lenght + 1) * 16 + 2) * pixel, 0, i * pixel);
         }
         engine.endDrawing();
+        glLineWidth(1.5f);
+        engine.startDrawing(GL_LINES);
+        engine.setColor(0x666666, 0.5f);
+        for (int i = -16 * lenght - 2; i <= 16 * (lenght + 1) + 2; i++) {
+            if (i % 16 != 0) {
+                continue;
+            }
+            engine.addVertex(i * pixel, 0, (-lenght * 16 - 2) * pixel);
+            engine.addVertex(i * pixel, 0, ((lenght + 1) * 16 + 2) * pixel);
+        }
+        for (int i = -16 * lenght - 2; i <= 16 * (lenght + 1) + 2; i++) {
+            if (i % 16 != 0) {
+                continue;
+            }
+            engine.addVertex((-lenght * 16 - 2) * pixel, 0, i * pixel);
+            engine.addVertex(((lenght + 1) * 16 + 2) * pixel, 0, i * pixel);
+        }
+        engine.endDrawing();
+        glDisable(GL_BLEND);
     }
 
-    private void drawDebugLines(){
+    private void drawDebugLines() {
+        glLineWidth(3f);
         engine.startDrawing(GL_LINES);
         engine.setColorOpaque(0xFF0000);
         engine.addVertex(0, 0, 0);
-        engine.addVertex(0, 0, 50);
+        engine.addVertex(0, 0, 1);
         engine.endDrawing();
         engine.startDrawing(GL_LINES);
         engine.setColorOpaque(0x0000FF);
         engine.addVertex(0, 0, 0);
-        engine.addVertex(50, 0, 0);
+        engine.addVertex(1, 0, 0);
         engine.endDrawing();
         engine.startDrawing(GL_LINES);
         engine.setColorOpaque(0x00FF00);
         engine.addVertex(0, 0, 0);
-        engine.addVertex(0, 50, 0);
+        engine.addVertex(0, 1, 0);
         engine.endDrawing();
+    }
 
-        engine.startDrawing(GL_LINES);
-        engine.setColorOpaque(0xFFFFFF);
-        engine.addVertex(0, 0, 0);
-        engine.addVertex(Math.cos(Math.toRadians(cameraRotation.getYaw())), Math.sin(Math.toRadians(cameraRotation.getPitch())), Math.sin(Math.toRadians(cameraRotation.getYaw())));
-        engine.endDrawing();
+    @Override
+    public void onWheelMoves(double amount) {
+        if(!GLFWDisplay.handler2D.getGui().blockMouseWheel()) {
+            Vect3d a = new Vect3d(0, 0, 1);
+            a.rotateX(Math.toRadians(cameraRotation.getPitch()));
+            a.rotateY(Math.toRadians(180 - cameraRotation.getYaw()));
+            a.normalize().multiply(-amount * pixel);
+            cameraTranslation.add(a);
+        }
+    }
+
+    private Vect3d getLookVector() {
+        Vect3d a = new Vect3d(0, 0, 1);
+        a.rotateX(Math.toRadians(cameraRotation.getPitch()));
+        a.rotateY(Math.toRadians(180 - cameraRotation.getYaw()));
+        return a.normalize().multiply(-1);
     }
 }
