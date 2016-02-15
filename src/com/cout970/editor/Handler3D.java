@@ -1,24 +1,26 @@
 package com.cout970.editor;
 
 import com.cout970.editor.model.IModel;
+import com.cout970.editor.model.TechneCube;
 import com.cout970.editor.render.engine.IRenderEngine;
+import com.cout970.editor.render.examples.Sphere;
 import com.cout970.editor.render.texture.TextureStorage;
-import com.cout970.editor.util.RotationVect;
-import com.cout970.editor.util.Vect2d;
-import com.cout970.editor.util.Vect3d;
+import com.cout970.editor.util.*;
+import org.lwjgl.glfw.GLFW;
 
 import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Created by cout970 on 10/02/2016.
  */
-public class Handler3D implements InputHandler.IMouseWheelCallback {
+public class Handler3D implements InputHandler.IMouseWheelCallback, InputHandler.IMouseButtonCallback {
 
     private ConfigurationFile config = ConfigurationFile.INSTANCE;
     private IRenderEngine engine = IRenderEngine.INSTANCE;
     private RotationVect cameraRotation = new RotationVect(30, -45);
     private Vect3d cameraTranslation = new Vect3d(-1, -1, -2);
     private static final double pixel = 1 / 16d;
+    private static Sphere sphere;
 
     public Handler3D() {
     }
@@ -48,6 +50,17 @@ public class Handler3D implements InputHandler.IMouseWheelCallback {
         }
         drawDebugLines();
         ModelTree.INSTANCE.getAllModels().forEach(IModel::render);
+        if (ModelTree.INSTANCE.getSelectedModels().size() == 1) {
+            IModel m = ModelTree.INSTANCE.getSelectedModels().get(0);
+            if (m instanceof TechneCube) {
+                glPushMatrix();
+                Vect3d v = ((TechneCube) m).getRotationPoint();
+                v.add(((TechneCube) m).getPos());
+                glTranslated(v.getX(), v.getY(), v.getZ());
+                sphere.render();
+                glPopMatrix();
+            }
+        }
         glPopMatrix();
     }
 
@@ -118,12 +131,12 @@ public class Handler3D implements InputHandler.IMouseWheelCallback {
     private void drawDebugLines() {
         glLineWidth(3f);
         engine.startDrawing(GL_LINES);
-        engine.setColorOpaque(0xFF0000);
+        engine.setColorOpaque(0x0000FF);
         engine.addVertex(0, 0, 0);
         engine.addVertex(0, 0, 1);
         engine.endDrawing();
         engine.startDrawing(GL_LINES);
-        engine.setColorOpaque(0x0000FF);
+        engine.setColorOpaque(0xFF0000);
         engine.addVertex(0, 0, 0);
         engine.addVertex(1, 0, 0);
         engine.endDrawing();
@@ -136,7 +149,7 @@ public class Handler3D implements InputHandler.IMouseWheelCallback {
 
     @Override
     public void onWheelMoves(double amount) {
-        if(!GLFWDisplay.handler2D.getGui().blockMouseWheel()) {
+        if (!GLFWDisplay.handler2D.getGui().blockMouseWheel()) {
             Vect3d a = new Vect3d(0, 0, 1);
             a.rotateX(Math.toRadians(cameraRotation.getPitch()));
             a.rotateY(Math.toRadians(180 - cameraRotation.getYaw()));
@@ -150,5 +163,36 @@ public class Handler3D implements InputHandler.IMouseWheelCallback {
         a.rotateX(Math.toRadians(cameraRotation.getPitch()));
         a.rotateY(Math.toRadians(180 - cameraRotation.getYaw()));
         return a.normalize().multiply(-1);
+    }
+
+    public void init() {
+        sphere = new Sphere(0.0625f, TextureStorage.ROTATION_POINT);
+        InputHandler.registerMouseButtonCallback(this);
+    }
+
+    @Override
+    public void onMouseClick(Vect2i pos, InputHandler.MouseButton button, int action) {
+        if (action == GLFW.GLFW_PRESS) {
+            GLFWDisplay.set3D();
+            glPushMatrix();
+            glLoadIdentity();
+
+            if (config.camaraController == 0) {
+                Vect3d rotP = new Vect3d(0, 0, 1);
+                glTranslated(-rotP.getX(), -rotP.getY(), -rotP.getZ());
+                glRotatef(cameraRotation.getPitch(), 1, 0, 0);
+                glRotatef(cameraRotation.getYaw(), 0, 1, 0);
+                glTranslated(rotP.getX(), rotP.getY(), rotP.getZ());
+                glTranslated(cameraTranslation.getX(), cameraTranslation.getY(), cameraTranslation.getZ());
+            } else if (config.camaraController == 1) {
+                glRotatef(cameraRotation.getPitch(), 1, 0, 0);
+                glRotatef(cameraRotation.getYaw(), 0, 1, 0);
+                glTranslated(cameraTranslation.getX(), cameraTranslation.getY(), cameraTranslation.getZ());
+            }
+
+            Pair<Vect3d, Vect3d> ray = ProjectionUtil.getRay(pos);
+
+            glPopMatrix();
+        }
     }
 }

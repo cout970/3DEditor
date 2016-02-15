@@ -155,6 +155,7 @@ public class GLFWDisplay {
         InputHandler.registerKeyboardCallback(handler2D);
         TextureStorage.INSTANCE.reloadTextures(Editor.EDITOR_NAME.toLowerCase());
         handler2D.init();
+        handler3D.init();
         init = true;
     }
 

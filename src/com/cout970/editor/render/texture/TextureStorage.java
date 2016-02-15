@@ -10,6 +10,7 @@ public class TextureStorage {
 	public static ITexture BUTTONS;
 	public static ITexture FONT;
 	public static ITexture MODEL_TEXTURE;
+	public static ITexture ROTATION_POINT;
 
 	private TextureStorage() {}
 
@@ -26,6 +27,8 @@ public class TextureStorage {
 				"button");
 		FONT = TextureManager.INSTANCE.loadTexture(new ResourceReference(domain, "fonts/oldfont.png"),
 				"font");
+		ROTATION_POINT = TextureManager.INSTANCE.loadTexture(new ResourceReference(domain, "textures/rotation_point.png"),
+				"rotation_point");
 		MODEL_TEXTURE = MISSING_TEXTURE;
 	}
 }

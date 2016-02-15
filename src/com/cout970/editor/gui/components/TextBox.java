@@ -23,6 +23,7 @@ public class TextBox implements ISizedComponent {
     protected int selectionAux;
     protected boolean focused;
     protected CenterType type;
+    protected boolean changes;
 
     public TextBox(ISizedComponent parent, Vect2i offset, int lenght) {
         this.parent = parent;
@@ -102,6 +103,7 @@ public class TextBox implements ISizedComponent {
     public void onFocusLose(){
         selectionStart = 0;
         selectionEnd = 0;
+        changes = true;
     }
 
     @Override
@@ -234,6 +236,14 @@ public class TextBox implements ISizedComponent {
     @Override
     public Vect2i getSize() {
         return size.copy();
+    }
+
+    public boolean hasChanged() {
+        return changes;
+    }
+
+    public void resetChanges(){
+        changes = false;
     }
 
     public enum CenterType {

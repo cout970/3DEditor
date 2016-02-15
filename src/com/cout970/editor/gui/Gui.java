@@ -52,8 +52,9 @@ public class Gui implements IGui, InputHandler.IKeyboardCallback, InputHandler.I
 
     @Override
     public void onMouseClick(Vect2i pos, InputHandler.MouseButton b, int action) {
-        if (action == GLFW.GLFW_PRESS)
+        if (action == GLFW.GLFW_PRESS) {
             components.forEach(i -> i.onMouseClick(this, pos.copy(), b));
+        }
     }
 
     @Override

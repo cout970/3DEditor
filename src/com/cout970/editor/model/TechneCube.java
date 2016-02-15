@@ -1,7 +1,9 @@
 package com.cout970.editor.model;
 
+import com.cout970.editor.render.engine.DisplayList;
 import com.cout970.editor.render.engine.IRenderEngine;
 import com.cout970.editor.render.texture.ITexture;
+import com.cout970.editor.util.Direction;
 import com.cout970.editor.util.Vect2d;
 import com.cout970.editor.util.Vect3d;
 import org.lwjgl.opengl.GL11;
@@ -14,7 +16,9 @@ import java.util.List;
  */
 public class TechneCube implements IModel {
 
+    protected static final float[] BRITHNESS = {0.5F, 1.0F, 0.8F, 0.8F, 0.6F, 0.6F};
     protected Quad[] quadList;
+    private DisplayList list;
     protected String name;
     protected Vect3d cubePos;
     protected Vect3d cubeSize;
@@ -23,7 +27,7 @@ public class TechneCube implements IModel {
     protected int textureSize;
     protected boolean flipped;
     protected Vect3d rotation;
-    protected Vect3d offset;
+    protected Vect3d rotationPoint;
 
     public TechneCube(String name, Vect3d cubePos, Vect3d cubeSize, ITexture texture, Vect2d textureOffset, int textureSize) {
         this.cubePos = cubePos;
@@ -32,11 +36,12 @@ public class TechneCube implements IModel {
         this.texture = texture;
         this.textureOffset = textureOffset;
         this.textureSize = textureSize;
-        this.offset = Vect3d.nullVector();
+        this.rotationPoint = Vect3d.nullVector();
         this.rotation = Vect3d.nullVector();
     }
 
     public void setFlipped(boolean flipped) {
+        resetRenderList();
         this.flipped = flipped;
     }
 
@@ -44,12 +49,12 @@ public class TechneCube implements IModel {
         return name;
     }
 
-    public Vect3d getCubePos() {
-        return cubePos;
+    public Vect3d getPos() {
+        return cubePos.copy();
     }
 
-    public Vect3d getCubeSize() {
-        return cubeSize;
+    public Vect3d getSize() {
+        return cubeSize.copy();
     }
 
     public ITexture getTexture() {
@@ -66,6 +71,85 @@ public class TechneCube implements IModel {
 
     public boolean isFlipped() {
         return flipped;
+    }
+
+    public Vect3d getRotation() {
+        return rotation.copy();
+    }
+
+    public Vect3d getRotationPoint() {
+        return rotationPoint.copy();
+    }
+
+    public void setName(String buffer) {
+        name = buffer;
+    }
+
+    public void setPos(Vect3d cubePos) {
+        resetRenderList();
+        this.cubePos = cubePos;
+    }
+
+    public void setSize(Vect3d cubeSize) {
+        resetRenderList();
+        this.cubeSize = cubeSize;
+    }
+
+    public void setTexture(ITexture texture) {
+        resetRenderList();
+        this.texture = texture;
+    }
+
+    public void setTextureOffset(Vect2d textureOffset) {
+        resetRenderList();
+        this.textureOffset = textureOffset;
+    }
+
+    public void setTextureSize(int textureSize) {
+        resetRenderList();
+        this.textureSize = textureSize;
+    }
+
+    public void setRotation(Vect3d rotation) {
+        resetRenderList();
+        this.rotation = rotation;
+    }
+
+    public void setRotationPoint(Vect3d offset) {
+        resetRenderList();
+        this.rotationPoint = offset;
+    }
+
+    @Override
+    public void render() {
+        IRenderEngine eng = IRenderEngine.INSTANCE;
+        texture.bind();
+        if (list == null) {
+            list = new DisplayList();
+            eng.startCompile(list);
+            createQuads();
+            eng.startDrawing(GL11.GL_QUADS);
+            for (Quad q : quadList) {
+                float bright = BRITHNESS[q.getNormal().ordinal()];
+                eng.setColor(bright, bright, bright, 1f);
+                for (QuadVertex v : QuadVertex.values()) {
+                    Vect2d uv = q.getUV(v);
+                    Vect3d ve = q.getVertex(v);
+                    eng.addTextureUV(uv.getX(), uv.getY());
+                    eng.addVertex(ve.getX(), ve.getY(), ve.getZ());
+                }
+            }
+            eng.endDrawing();
+            eng.endCompile();
+        }
+        eng.render(list);
+    }
+
+    private void resetRenderList() {
+        if (list != null) {
+            list.free();
+            list = null;
+        }
     }
 
     public void createQuads() {
@@ -97,37 +181,37 @@ public class TechneCube implements IModel {
         double offsetX = textureOffset.getX() * pixel;
         double offsetY = textureOffset.getY() * pixel;
 
-        quadList[0] = new Quad(new Vertex[]{vertex6.copy(), vertex2.copy(), vertex3.copy(), vertex7.copy()},
+        quadList[0] = new Quad(Direction.WEST, new Vertex[]{vertex6.copy(), vertex2.copy(), vertex3.copy(), vertex7.copy()},
                 offsetX + length + width,
                 offsetY + length,
                 offsetX + length + width + length,
                 offsetY + length + height, texture);
 
-        quadList[1] = new Quad(new Vertex[]{vertex1.copy(), vertex5.copy(), vertex8.copy(), vertex4.copy()},
+        quadList[1] = new Quad(Direction.EAST, new Vertex[]{vertex1.copy(), vertex5.copy(), vertex8.copy(), vertex4.copy()},
                 offsetX,
                 offsetY + length,
                 offsetX + length,
                 offsetY + length + height, texture);
 
-        quadList[2] = new Quad(new Vertex[]{vertex6.copy(), vertex5.copy(), vertex1.copy(), vertex2.copy()},
+        quadList[2] = new Quad(Direction.DOWN, new Vertex[]{vertex6.copy(), vertex5.copy(), vertex1.copy(), vertex2.copy()},
                 offsetX + length,
                 offsetY,
                 offsetX + length + width,
                 offsetY + length, texture);
 
-        quadList[3] = new Quad(new Vertex[]{vertex3.copy(), vertex4.copy(), vertex8.copy(), vertex7.copy()},
+        quadList[3] = new Quad(Direction.UP, new Vertex[]{vertex3.copy(), vertex4.copy(), vertex8.copy(), vertex7.copy()},
                 offsetX + length + width,
                 offsetY + length,
                 offsetX + length + width + width,
                 offsetY, texture);
 
-        quadList[4] = new Quad(new Vertex[]{vertex2.copy(), vertex1.copy(), vertex4.copy(), vertex3.copy()},
+        quadList[4] = new Quad(Direction.NORTH, new Vertex[]{vertex2.copy(), vertex1.copy(), vertex4.copy(), vertex3.copy()},
                 offsetX + length,
                 offsetY + length,
                 offsetX + length + width,
                 offsetY + length + height, texture);
 
-        quadList[5] = new Quad(new Vertex[]{vertex5.copy(), vertex6.copy(), vertex7.copy(), vertex8.copy()},
+        quadList[5] = new Quad(Direction.SOUTH, new Vertex[]{vertex5.copy(), vertex6.copy(), vertex7.copy(), vertex8.copy()},
                 offsetX + length + width + length,
                 offsetY + length,
                 offsetX + length + width + length + width,
@@ -141,28 +225,25 @@ public class TechneCube implements IModel {
 
         for (Quad q : quadList) {
             for (int i = 0; i < 4; i++) {
-                q.vertex[i].getPos().add(offset);
+
                 if (rotation != null) {
+                    q.vertex[i].getPos().sub(rotationPoint);
                     q.vertex[i].getPos().rotateX(rotation.getX());
                     q.vertex[i].getPos().rotateY(rotation.getY());
                     q.vertex[i].getPos().rotateZ(rotation.getZ());
+                    q.vertex[i].getPos().add(rotationPoint);
                 }
+
                 q.vertex[i].getPos().add(cubePos);
             }
         }
     }
 
     public List<Quad> getQuads() {
-        createQuads();
+        if (quadList == null) {
+            createQuads();
+        }
         return Arrays.asList(quadList);
-    }
-
-    public void setOffset(Vect3d offset) {
-        this.offset = offset;
-    }
-
-    public void setRotation(Vect3d rotation) {
-        this.rotation = rotation;
     }
 
     @Override
@@ -175,67 +256,10 @@ public class TechneCube implements IModel {
                 ", textureOffset=" + textureOffset +
                 ", textureSize=" + textureSize +
                 ", rotation=" + rotation +
-                ", offset=" + offset +
+                ", rotationPoint=" + rotationPoint +
                 ", flipped=" + flipped +
                 ", quadList=" + Arrays.toString(quadList) +
                 '}';
-    }
-
-    @Override
-    public void render() {
-        IRenderEngine eng = IRenderEngine.INSTANCE;
-        float[] f1 = {0.9f, 0.8f, 0.5f, 0.7f, 0.6f, 0.4f};
-        int i = 0;
-        texture.bind();
-        eng.startDrawing(GL11.GL_QUADS);
-        for (Quad q : getQuads()) {
-            float f = f1[i];
-            i++;
-            eng.setColor(f, f, f, 1f);
-            for (QuadVertex v : QuadVertex.values()) {
-                Vect2d uv = q.getUV(v);
-                Vect3d ve = q.getVertex(v);
-                eng.addTextureUV(uv.getX(), uv.getY());
-                eng.addVertex(ve.getX(), ve.getY(), ve.getZ());
-            }
-        }
-        eng.endDrawing();
-    }
-
-    public void setCubeName(String buffer) {
-        name = buffer;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setCubePos(Vect3d cubePos) {
-        this.cubePos = cubePos;
-    }
-
-    public void setCubeSize(Vect3d cubeSize) {
-        this.cubeSize = cubeSize;
-    }
-
-    public void setTexture(ITexture texture) {
-        this.texture = texture;
-    }
-
-    public void setTextureOffset(Vect2d textureOffset) {
-        this.textureOffset = textureOffset;
-    }
-
-    public void setTextureSize(int textureSize) {
-        this.textureSize = textureSize;
-    }
-
-    public Vect3d getRotation() {
-        return rotation;
-    }
-
-    public Vect3d getOffset() {
-        return offset;
     }
 
     private class Vertex {
@@ -282,9 +306,11 @@ public class TechneCube implements IModel {
         protected static final float EPSILON = 0.0f / 1F;
         protected Vertex[] vertex;
         protected ITexture texture;
+        protected Direction normal;
 
-        public Quad(Vertex[] vertices, double u, double v, double u2, double v2, ITexture texture) {
+        public Quad(Direction normal, Vertex[] vertices, double u, double v, double u2, double v2, ITexture texture) {
             vertex = vertices;
+            this.normal = normal;
             this.texture = texture;
             vertices[0].setUV(u2 - EPSILON, v + EPSILON);
             vertices[1].setUV(u + EPSILON, v + EPSILON);
@@ -306,6 +332,10 @@ public class TechneCube implements IModel {
 
         public Vect2d getUV(QuadVertex pos) {
             return vertex[pos.ordinal()].getUV();
+        }
+
+        public Direction getNormal() {
+            return normal;
         }
 
         @Override

@@ -21,6 +21,7 @@ public class NumberEdit implements ISizedComponent {
     private AbstractButton down;
     private boolean floats;
     private Vect2i lastTickMouse;
+    private boolean changes;
 
     public NumberEdit(ISizedComponent parent, Vect2i offset, boolean floats) {
         this.parent = parent;
@@ -91,6 +92,7 @@ public class NumberEdit implements ISizedComponent {
             this.value = value;
             number.setBuffer(String.valueOf(getValueClamped()).replace(',', '.'));
         }
+        changes = true;
     }
 
     public Vect2i upUvMapper(AbstractStateButton.ButtonState buttonState) {
@@ -173,5 +175,13 @@ public class NumberEdit implements ISizedComponent {
     @Override
     public Vect2i getSize() {
         return size.copy();
+    }
+
+    public boolean hasChanged() {
+        return changes;
+    }
+
+    public void resetChanges(){
+        changes = false;
     }
 }
