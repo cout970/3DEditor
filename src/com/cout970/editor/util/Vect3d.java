@@ -126,6 +126,11 @@ public class Vect3d {
         return new Vect3d(x, y, z);
     }
 
+    //to this vector v is proyected
+    public Vect3d proyection(Vect3d v){
+        return v.copy().multiply(dotProduct(v)/v.magSquared());
+    }
+
     /**
      * Returns a array of doubles with the components of the vector
      */

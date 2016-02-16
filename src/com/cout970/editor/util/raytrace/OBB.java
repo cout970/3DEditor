@@ -1,7 +1,6 @@
 package com.cout970.editor.util.raytrace;
 
 import com.cout970.editor.util.Direction;
-import com.cout970.editor.util.Vect2d;
 import com.cout970.editor.util.Vect3d;
 
 /**
@@ -44,25 +43,35 @@ public class OBB implements IRayObstacle {
     }
 
     private Quad getQuad(Direction d) {
-        Vect3d str = Vect3d.nullVector();
+        Vect3d str = Vect3d.nullVector().add(pos);
         Vect3d end = size.copy();
-        Direction[] dirs = d.getAxis().getPerpendicularDirections();
-        Vect2d[] pattern = {new Vect2d(0, 0), new Vect2d(1, 0), new Vect2d(1, 1), new Vect2d(0, 1)};
-        Quad q = new Quad(
-                new Vect3d(str.getX() + end.getX() * (d.getOffsetX() > 0 ? 1 : pattern[0].getX()), str.getY() + end.getY() * (d.getOffsetY() > 0 ? 1 : pattern[0].getY()),
-                        str.getZ() + end.getZ() * (d.getOffsetZ() > 0 ? 1 : d.getOffsetX() > 0 ? pattern[0].getY() : pattern[0].getX())),
-                new Vect3d(str.getX() + end.getX() * (d.getOffsetX() > 0 ? 1 : pattern[1].getX()), str.getY() + end.getY() * (d.getOffsetY() > 0 ? 1 : pattern[1].getY()),
-                        str.getZ() + end.getZ() * (d.getOffsetZ() > 0 ? 1 : d.getOffsetX() > 0 ? pattern[1].getY() : pattern[1].getX())),
-                new Vect3d(str.getX() + end.getX() * (d.getOffsetX() > 0 ? 1 : pattern[2].getX()), str.getY() + end.getY() * (d.getOffsetY() > 0 ? 1 : pattern[2].getY()),
-                        str.getZ() + end.getZ() * (d.getOffsetZ() > 0 ? 1 : d.getOffsetX() > 0 ? pattern[2].getY() : pattern[2].getX())),
-                new Vect3d(str.getX() + end.getX() * (d.getOffsetX() > 0 ? 1 : pattern[3].getX()), str.getY() + end.getY() * (d.getOffsetY() > 0 ? 1 : pattern[3].getY()),
-                        str.getZ() + end.getZ() * (d.getOffsetZ() > 0 ? 1 : d.getOffsetX() > 0 ? pattern[3].getY() : pattern[3].getX())));
-        for (int i = 0; i < 4; i++) {
-            q.setVertex(i, q.getVertex(i).rotateX(rotation.getX()));
-            q.setVertex(i, q.getVertex(i).rotateY(rotation.getY()));
-            q.setVertex(i, q.getVertex(i).rotateZ(rotation.getZ()));
-            q.setVertex(i, q.getVertex(i).add(pos));
+        Vect3d[] pattern = null;
+        if (d == Direction.DOWN) {
+            pattern = new Vect3d[]{new Vect3d(0, 0, 0), new Vect3d(1, 0, 0), new Vect3d(1, 0, 1), new Vect3d(0, 0, 1)};
+        } else if (d == Direction.UP) {
+            pattern = new Vect3d[]{new Vect3d(0, 1, 0), new Vect3d(1, 1, 0), new Vect3d(1, 1, 1), new Vect3d(0, 1, 1)};
+        } else if (d == Direction.NORTH) {
+            pattern = new Vect3d[]{new Vect3d(0, 0, 0), new Vect3d(1, 0, 0), new Vect3d(1, 1, 0), new Vect3d(1, 0, 0)};
+        } else if (d == Direction.SOUTH) {
+            pattern = new Vect3d[]{new Vect3d(0, 0, 1), new Vect3d(1, 0, 1), new Vect3d(1, 1, 1), new Vect3d(1, 0, 1)};
+        } else if (d == Direction.WEST) {
+            pattern = new Vect3d[]{new Vect3d(0, 0, 0), new Vect3d(0, 1, 0), new Vect3d(0, 1, 1), new Vect3d(0, 0, 1)};
+        } else {
+            pattern = new Vect3d[]{new Vect3d(1, 0, 0), new Vect3d(1, 1, 0), new Vect3d(1, 1, 1), new Vect3d(1, 0, 1)};
         }
+        Quad q = new Quad(
+                new Vect3d(str.getX() + end.getX() * pattern[0].getX(), str.getY() + end.getY() * pattern[0].getY(), str.getZ() + end.getZ() * pattern[0].getZ()),
+                new Vect3d(str.getX() + end.getX() * pattern[1].getX(), str.getY() + end.getY() * pattern[1].getY(), str.getZ() + end.getZ() * pattern[1].getZ()),
+                new Vect3d(str.getX() + end.getX() * pattern[2].getX(), str.getY() + end.getY() * pattern[2].getY(), str.getZ() + end.getZ() * pattern[2].getZ()),
+                new Vect3d(str.getX() + end.getX() * pattern[3].getX(), str.getY() + end.getY() * pattern[3].getY(), str.getZ() + end.getZ() * pattern[3].getZ()));
+
+//        for (int i = 0; i < 4; i++) {
+//            q.setVertex(i, q.getVertex(i).rotateX(rotation.getX()));
+//            q.setVertex(i, q.getVertex(i).rotateY(rotation.getY()));
+//            q.setVertex(i, q.getVertex(i).rotateZ(rotation.getZ()));
+//            q.setVertex(i, q.getVertex(i).add(pos));
+//        }
+
         return q;
     }
 
@@ -73,12 +82,22 @@ public class OBB implements IRayObstacle {
         RayTraceResult r;
         for (Direction d : Direction.values()) {
             Quad q = getQuad(d);
+
             r = q.rayTrace(ray);
-            if (r != null){
+            if (r != null) {
                 r.setObject(this);
                 return r;
             }
         }
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "OBB{" +
+                "pos=" + pos +
+                ", size=" + size +
+                ", rotation=" + rotation +
+                '}';
     }
 }

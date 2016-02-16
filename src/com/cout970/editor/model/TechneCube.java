@@ -7,7 +7,7 @@ import com.cout970.editor.util.Direction;
 import com.cout970.editor.util.Vect2d;
 import com.cout970.editor.util.Vect3d;
 import com.cout970.editor.util.raytrace.IRayObstacle;
-import com.cout970.editor.util.raytrace.OBB;
+import com.cout970.editor.util.raytrace.Triangle;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
@@ -150,7 +150,8 @@ public class TechneCube implements IModel {
 
     @Override
     public List<IRayObstacle> getRayObstacles() {
-        return Collections.singletonList(new OBB(getPos(), getSize(), getRotation()));
+        return Collections.singletonList(new Triangle(getPos().add(0, 0, 0), getPos().add(1, 0, 0), getPos().add(0, 0, 1)));
+//        return Collections.singletonList(new OBB(getPos(), getSize().multiply(0.0625f), getRotation()));
     }
 
     private void resetRenderList() {

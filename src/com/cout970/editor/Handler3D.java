@@ -5,10 +5,7 @@ import com.cout970.editor.model.TechneCube;
 import com.cout970.editor.render.engine.IRenderEngine;
 import com.cout970.editor.render.examples.Sphere;
 import com.cout970.editor.render.texture.TextureStorage;
-import com.cout970.editor.util.RotationVect;
-import com.cout970.editor.util.Vect2d;
-import com.cout970.editor.util.Vect2i;
-import com.cout970.editor.util.Vect3d;
+import com.cout970.editor.util.*;
 import com.cout970.editor.util.raytrace.IRayObstacle;
 import com.cout970.editor.util.raytrace.ProjectionUtil;
 import com.cout970.editor.util.raytrace.Ray;
@@ -159,7 +156,7 @@ public class Handler3D implements InputHandler.IMouseWheelCallback, InputHandler
 
     @Override
     public void onWheelMoves(double amount) {
-        if (!GLFWDisplay.handler2D.getGui().blockMouseWheel()) {
+        if (!GLFWDisplay.handler2D.getGui().blockMouse()) {
             Vect3d a = new Vect3d(0, 0, 1);
             a.rotateX(Math.toRadians(cameraRotation.getPitch()));
             a.rotateY(Math.toRadians(180 - cameraRotation.getYaw()));
@@ -182,7 +179,7 @@ public class Handler3D implements InputHandler.IMouseWheelCallback, InputHandler
 
     @Override
     public void onMouseClick(Vect2i pos, InputHandler.MouseButton button, int action) {
-        if (action == GLFW.GLFW_PRESS) {
+        if (action == GLFW.GLFW_PRESS && button == InputHandler.MouseButton.LEFT && !GLFWDisplay.handler2D.getGui().blockMouse()) {
             GLFWDisplay.set3D();
             glPushMatrix();
             glLoadIdentity();
@@ -202,10 +199,11 @@ public class Handler3D implements InputHandler.IMouseWheelCallback, InputHandler
 
             Ray ray = ProjectionUtil.getRay(pos);
             LinkedHashMap<RayTraceResult, IModel> hits = new LinkedHashMap<>();
-            for (IModel m : ModelTree.INSTANCE.getAllVisibleModels()){
-                for(IRayObstacle r : m.getRayObstacles()){
+            for (IModel m : ModelTree.INSTANCE.getAllVisibleModels()) {
+                for (IRayObstacle r : m.getRayObstacles()) {
                     RayTraceResult res = r.rayTrace(ray);
-                    if (res != null){
+                    if (res != null) {
+                        Log.debug("hit: " + res);
                         hits.put(res, m);
                     }
                 }
@@ -213,13 +211,13 @@ public class Handler3D implements InputHandler.IMouseWheelCallback, InputHandler
             double dist = 0;
             RayTraceResult best = null;
             IModel model = null;
-            for(Map.Entry<RayTraceResult, IModel> e : hits.entrySet()){
+            for (Map.Entry<RayTraceResult, IModel> e : hits.entrySet()) {
                 RayTraceResult o = e.getKey();
-                if (best == null){
+                if (best == null) {
                     best = o;
                     dist = o.getHit().distance(ray.getStart());
                     model = e.getValue();
-                }else if(o.getHit().distance(ray.getStart()) < dist){
+                } else if (o.getHit().distance(ray.getStart()) < dist) {
                     best = o;
                     dist = o.getHit().distance(ray.getStart());
                     model = e.getValue();

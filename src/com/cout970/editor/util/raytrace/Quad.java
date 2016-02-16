@@ -95,4 +95,14 @@ public class Quad implements IRayObstacle {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "Quad{" +
+                "d=" + d +
+                ", c=" + c +
+                ", b=" + b +
+                ", a=" + a +
+                '}';
+    }
 }

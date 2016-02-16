@@ -128,7 +128,7 @@ public class Gui implements IGui, InputHandler.IKeyboardCallback, InputHandler.I
         components.forEach(i -> i.onCharPress(this, key));
     }
 
-    public boolean blockMouseWheel(){
+    public boolean blockMouse(){
         if (InputHandler.getCursorPos().getY() < TopBar.BAR_HEIGHT)
             return true;
         for(IGuiComponent c : components){

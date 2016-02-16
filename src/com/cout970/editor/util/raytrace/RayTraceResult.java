@@ -40,4 +40,13 @@ public class RayTraceResult {
     public void setObject(IRayObstacle object) {
         this.object = object;
     }
+
+    @Override
+    public String toString() {
+        return "RayTraceResult{" +
+                "ray=" + ray +
+                ", hit=" + hit +
+                ", object=" + object +
+                '}';
+    }
 }

@@ -34,4 +34,12 @@ public class Ray {
     public Ray copy(){
         return new Ray(start, end);
     }
+
+    @Override
+    public String toString() {
+        return "Ray{" +
+                "start=" + start +
+                ", end=" + end +
+                '}';
+    }
 }

@@ -54,6 +54,8 @@ public class ModelTree {
     }
 
     public List<IModel> getAllVisibleModels() {
-        return getAllModels();
+        List<IModel> list = new ArrayList<>(models.size() + 1);
+        list.addAll(models);
+        return list;
     }
 }

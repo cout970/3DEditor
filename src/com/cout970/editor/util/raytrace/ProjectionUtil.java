@@ -57,7 +57,7 @@ public class ProjectionUtil extends Util {
 
         gluUnProject(winX, winY, depth, modelView, projectionView, viewport, position);
         position.rewind();
-        return new Vector3f(position.get(0), -position.get(1), position.get(2));
+        return new Vector3f(position.get(0), position.get(1), position.get(2));
     }
 
     /**
