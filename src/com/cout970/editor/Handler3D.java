@@ -5,8 +5,18 @@ import com.cout970.editor.model.TechneCube;
 import com.cout970.editor.render.engine.IRenderEngine;
 import com.cout970.editor.render.examples.Sphere;
 import com.cout970.editor.render.texture.TextureStorage;
-import com.cout970.editor.util.*;
+import com.cout970.editor.util.RotationVect;
+import com.cout970.editor.util.Vect2d;
+import com.cout970.editor.util.Vect2i;
+import com.cout970.editor.util.Vect3d;
+import com.cout970.editor.util.raytrace.IRayObstacle;
+import com.cout970.editor.util.raytrace.ProjectionUtil;
+import com.cout970.editor.util.raytrace.Ray;
+import com.cout970.editor.util.raytrace.RayTraceResult;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -49,7 +59,7 @@ public class Handler3D implements InputHandler.IMouseWheelCallback, InputHandler
             drawAxisGridY();
         }
         drawDebugLines();
-        ModelTree.INSTANCE.getAllModels().forEach(IModel::render);
+        ModelTree.INSTANCE.getAllModels().forEach(m -> m.render(false));
         if (ModelTree.INSTANCE.getSelectedModels().size() == 1) {
             IModel m = ModelTree.INSTANCE.getSelectedModels().get(0);
             if (m instanceof TechneCube) {
@@ -190,7 +200,37 @@ public class Handler3D implements InputHandler.IMouseWheelCallback, InputHandler
                 glTranslated(cameraTranslation.getX(), cameraTranslation.getY(), cameraTranslation.getZ());
             }
 
-            Pair<Vect3d, Vect3d> ray = ProjectionUtil.getRay(pos);
+            Ray ray = ProjectionUtil.getRay(pos);
+            LinkedHashMap<RayTraceResult, IModel> hits = new LinkedHashMap<>();
+            for (IModel m : ModelTree.INSTANCE.getAllVisibleModels()){
+                for(IRayObstacle r : m.getRayObstacles()){
+                    RayTraceResult res = r.rayTrace(ray);
+                    if (res != null){
+                        hits.put(res, m);
+                    }
+                }
+            }
+            double dist = 0;
+            RayTraceResult best = null;
+            IModel model = null;
+            for(Map.Entry<RayTraceResult, IModel> e : hits.entrySet()){
+                RayTraceResult o = e.getKey();
+                if (best == null){
+                    best = o;
+                    dist = o.getHit().distance(ray.getStart());
+                    model = e.getValue();
+                }else if(o.getHit().distance(ray.getStart()) < dist){
+                    best = o;
+                    dist = o.getHit().distance(ray.getStart());
+                    model = e.getValue();
+                }
+            }
+            if (!InputHandler.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL)) {
+                ModelTree.INSTANCE.clearSelection();
+            }
+            if (best != null) {
+                ModelTree.INSTANCE.addModelToSelection(model);
+            }
 
             glPopMatrix();
         }

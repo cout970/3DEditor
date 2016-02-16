@@ -7,7 +7,7 @@ public class Editor {
 
     public static final String EDITOR_NAME = "Editor";
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         GLFWDisplay.run();
     }
 }

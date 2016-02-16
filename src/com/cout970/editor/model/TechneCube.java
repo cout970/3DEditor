@@ -6,9 +6,12 @@ import com.cout970.editor.render.texture.ITexture;
 import com.cout970.editor.util.Direction;
 import com.cout970.editor.util.Vect2d;
 import com.cout970.editor.util.Vect3d;
+import com.cout970.editor.util.raytrace.IRayObstacle;
+import com.cout970.editor.util.raytrace.OBB;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,7 +21,7 @@ public class TechneCube implements IModel {
 
     protected static final float[] BRITHNESS = {0.5F, 1.0F, 0.8F, 0.8F, 0.6F, 0.6F};
     protected Quad[] quadList;
-    private DisplayList list;
+    private DisplayList renderList;
     protected String name;
     protected Vect3d cubePos;
     protected Vect3d cubeSize;
@@ -121,12 +124,11 @@ public class TechneCube implements IModel {
     }
 
     @Override
-    public void render() {
+    public void render(boolean selected) {
         IRenderEngine eng = IRenderEngine.INSTANCE;
-        texture.bind();
-        if (list == null) {
-            list = new DisplayList();
-            eng.startCompile(list);
+        if (renderList == null) {
+            renderList = new DisplayList();
+            eng.startCompile(renderList);
             createQuads();
             eng.startDrawing(GL11.GL_QUADS);
             for (Quad q : quadList) {
@@ -142,13 +144,19 @@ public class TechneCube implements IModel {
             eng.endDrawing();
             eng.endCompile();
         }
-        eng.render(list);
+        texture.bind();
+        eng.render(renderList);
+    }
+
+    @Override
+    public List<IRayObstacle> getRayObstacles() {
+        return Collections.singletonList(new OBB(getPos(), getSize(), getRotation()));
     }
 
     private void resetRenderList() {
-        if (list != null) {
-            list.free();
-            list = null;
+        if (renderList != null) {
+            renderList.free();
+            renderList = null;
         }
     }
 

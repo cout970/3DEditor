@@ -1,5 +1,7 @@
-package com.cout970.editor.util;
+package com.cout970.editor.util.raytrace;
 
+import com.cout970.editor.util.Vect2i;
+import com.cout970.editor.util.Vect3d;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
@@ -32,10 +34,10 @@ public class ProjectionUtil extends Util {
     private static final float[] up = new float[3];
 
 
-    public static Pair<Vect3d, Vect3d> getRay(Vect2i mouse){
+    public static Ray getRay(Vect2i mouse) {
         Vector3f a = unproject(mouse.getX(), mouse.getY(), 0);
         Vector3f b = unproject(mouse.getX(), mouse.getY(), 1);
-        return new Pair<>(new Vect3d(a.x, a.y, a.z), new Vect3d(b.x, b.y, b.z));
+        return new Ray(new Vect3d(a.x, a.y, a.z), new Vect3d(b.x, b.y, b.z));
     }
 
 
@@ -91,7 +93,7 @@ public class ProjectionUtil extends Util {
 
         for (i = 0; i < 4; i++) {
             /*
-			 * * Look for largest element in column
+             * * Look for largest element in column
 			 */
             swap = i;
             for (j = i + 1; j < 4; j++) {

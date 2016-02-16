@@ -52,4 +52,8 @@ public class ModelTree {
     public void init() {
         modelBase = new TechneCube("base", new Vect3d(0, -1, 0), new Vect3d(16, 16, 16), TextureStorage.CUBE, new Vect2d(0, 0), 16);
     }
+
+    public List<IModel> getAllVisibleModels() {
+        return getAllModels();
+    }
 }

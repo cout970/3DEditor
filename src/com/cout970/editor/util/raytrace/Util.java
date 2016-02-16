@@ -1,4 +1,4 @@
-package com.cout970.editor.util;
+package com.cout970.editor.util.raytrace;
 
 import org.lwjgl.BufferUtils;
 
