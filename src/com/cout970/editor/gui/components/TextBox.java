@@ -10,7 +10,7 @@ import org.lwjgl.glfw.GLFW;
 /**
  * Created by cout970 on 12/02/2016.
  */
-public class TextBox implements ISizedComponent {
+public class TextBox implements ISizedComponent, ILockable {
 
     protected String buffer;
     protected int pointer;
@@ -24,6 +24,7 @@ public class TextBox implements ISizedComponent {
     protected boolean focused;
     protected CenterType type;
     protected boolean changes;
+    protected boolean locked;
 
     public TextBox(ISizedComponent parent, Vect2i offset, int lenght) {
         this.parent = parent;
@@ -44,27 +45,31 @@ public class TextBox implements ISizedComponent {
         Vect2i margin = new Vect2i(1, 1);
         gui.getGuiRenderer().drawRectangle(parent.getPos().add(offset), parent.getPos().add(offset).add(size), new Color(0));
         gui.getGuiRenderer().drawRectangle(parent.getPos().add(offset).add(margin), parent.getPos().add(offset).add(size).sub(margin), new Color(0x999999));
-        Vect2i pos0;
-        if (type == CenterType.LEFT) {
-            pos0 = parent.getPos().add(offset).copy();
-        } else if (type == CenterType.RIGHT) {
-            pos0 = parent.getPos().add(offset).copy().add(size.getX() - buffer.length() * 8 - 4, 0);
-        } else {
-            pos0 = parent.getPos().add(offset).copy().add(size.getX() / 2 - buffer.length() * 4 - 4, 0);
-        }
-        for (int i = 0; i < buffer.length(); i++) {
-            char c = buffer.charAt(i);
-            Vect2i pos = new Vect2i(pos0.getX() + i * 8 + 2, pos0.getY() + 4);
-            if (i >= selectionStart && i < selectionEnd) {
-                gui.getGuiRenderer().drawRectangle(pos.copy().sub(0, 2), pos.copy().add(8, 10), new Color(0x214283));
+        if (!locked) {
+            Vect2i pos0;
+            if (type == CenterType.LEFT) {
+                pos0 = parent.getPos().add(offset).copy();
+            } else if (type == CenterType.RIGHT) {
+                pos0 = parent.getPos().add(offset).copy().add(size.getX() - buffer.length() * 8 - 4, 0);
+            } else {
+                pos0 = parent.getPos().add(offset).copy().add(size.getX() / 2 - buffer.length() * 4 - 4, 0);
             }
-            gui.getFontRenderer().drawString("" + c, pos.getX(), pos.getY(), 0);
-        }
-        if (focused) {
-            if (((int) (GLFW.glfwGetTime() * 1000)) % 1000 > 500) {
-                gui.getGuiRenderer().drawRectangle(new Vect2i(pos0.getX() + pointer * 8 + 2, pos0.getY() + 2),
-                        new Vect2i(pos0.getX() + pointer * 8 + 4, pos0.getY() + 8 + 6), new Color(0));
+            for (int i = 0; i < buffer.length(); i++) {
+                char c = buffer.charAt(i);
+                Vect2i pos = new Vect2i(pos0.getX() + i * 8 + 2, pos0.getY() + 4);
+                if (i >= selectionStart && i < selectionEnd) {
+                    gui.getGuiRenderer().drawRectangle(pos.copy().sub(0, 2), pos.copy().add(8, 10), new Color(0x214283));
+                }
+                gui.getFontRenderer().drawString("" + c, pos.getX(), pos.getY(), 0);
             }
+            if (focused) {
+                if (((int) (GLFW.glfwGetTime() * 1000)) % 1000 > 500) {
+                    gui.getGuiRenderer().drawRectangle(new Vect2i(pos0.getX() + pointer * 8 + 2, pos0.getY() + 2),
+                            new Vect2i(pos0.getX() + pointer * 8 + 4, pos0.getY() + 8 + 6), new Color(0));
+                }
+            }
+        }else{
+            gui.getGuiRenderer().drawRectangle(parent.getPos().add(offset).add(margin), parent.getPos().add(offset).add(size).sub(margin), new Color(0x777777));
         }
     }
 
@@ -94,13 +99,13 @@ public class TextBox implements ISizedComponent {
         }
     }
 
-    public void onFocusGained(){
+    public void onFocusGained() {
         selectionStart = 0;
         selectionEnd = buffer.length();
         pointer = selectionEnd;
     }
 
-    public void onFocusLose(){
+    public void onFocusLose() {
         selectionStart = 0;
         selectionEnd = 0;
         changes = true;
@@ -124,10 +129,10 @@ public class TextBox implements ISizedComponent {
                             selectionEnd--;
                     }
                 } else {
-                    if (selectionStart == selectionAux){
+                    if (selectionStart == selectionAux) {
                         if (selectionEnd < buffer.length())
                             selectionEnd++;
-                    }else if (selectionEnd == selectionAux) {
+                    } else if (selectionEnd == selectionAux) {
                         if (selectionStart < selectionAux)
                             selectionStart++;
                     } else {
@@ -170,7 +175,7 @@ public class TextBox implements ISizedComponent {
                 if (pointer < buffer.length()) {
                     pointer++;
                 }
-            }else if(key == GLFW.GLFW_KEY_ENTER){
+            } else if (key == GLFW.GLFW_KEY_ENTER) {
                 focused = false;
                 onFocusLose();
             }
@@ -188,7 +193,7 @@ public class TextBox implements ISizedComponent {
                 pointer = selectionStart + 1;
                 selectionStart = 0;
                 selectionEnd = 0;
-            } else if(buffer.length() < maxLenght){
+            } else if (buffer.length() < maxLenght) {
                 buffer = buffer.substring(0, pointer) + c + buffer.substring(pointer, buffer.length());
                 pointer++;
             }
@@ -242,8 +247,18 @@ public class TextBox implements ISizedComponent {
         return changes;
     }
 
-    public void resetChanges(){
+    public void resetChanges() {
         changes = false;
+    }
+
+    @Override
+    public boolean isLocked() {
+        return locked;
+    }
+
+    @Override
+    public void setLocked(boolean b) {
+        this.locked = b;
     }
 
     public enum CenterType {

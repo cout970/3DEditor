@@ -2,10 +2,7 @@ package com.cout970.editor.gui.windows;
 
 import com.cout970.editor.ModelTree;
 import com.cout970.editor.gui.IGui;
-import com.cout970.editor.gui.components.CubeNameTextBox;
-import com.cout970.editor.gui.components.NumberEdit;
-import com.cout970.editor.gui.components.RotationBar;
-import com.cout970.editor.gui.components.TextBox;
+import com.cout970.editor.gui.components.*;
 import com.cout970.editor.model.IModel;
 import com.cout970.editor.model.TechneCube;
 import com.cout970.editor.util.Color;
@@ -72,23 +69,30 @@ public class CubeEditWindow extends InternalWindow {
     public void renderBackground(IGui gui, Vect2i mouse, float partialTicks) {
         super.renderBackground(gui, mouse, partialTicks);
         if (!hide) {
-            if (ModelTree.INSTANCE.getSelectedModels().size() == 1 && cubeModel != ModelTree.INSTANCE.getSelectedModels().get(0)) {
-                loadModel(ModelTree.INSTANCE.getSelectedModels().get(0));
-            }
-            if (cubeModel != null) {
-                updateModel(cubeModel);
-            }
             gui.getGuiRenderer().drawString("Cube Name", getPos().add(2, 16), new Color(0));
             gui.getGuiRenderer().drawString("Cube Size", getPos().add(2, 46), new Color(0));
             gui.getGuiRenderer().drawString("Cube Position", getPos().add(2, 76), new Color(0));
             gui.getGuiRenderer().drawString("Rotation Point", getPos().add(2, 106), new Color(0));
             gui.getGuiRenderer().drawString("Rotation", getPos().add(2, 136), new Color(0));
 
+            if (ModelTree.INSTANCE.getSelectedModels().size() == 1 && cubeModel != ModelTree.INSTANCE.getSelectedModels().get(0)) {
+                loadModel(ModelTree.INSTANCE.getSelectedModels().get(0));
+            }else if(ModelTree.INSTANCE.getSelectedModels().size() != 1 || cubeModel != ModelTree.INSTANCE.getSelectedModels().get(0)){
+                cubeModel = null;
+            }
+
+            if (cubeModel == null){
+                subParts.stream().filter(i -> i instanceof ILockable).map(i -> (ILockable) i).forEach(i -> i.setLocked(true));
+            }else{
+                subParts.stream().filter(i -> i instanceof ILockable).map(i -> (ILockable) i).forEach(i -> i.setLocked(false));
+                updateModel(cubeModel);
+            }
         }
     }
 
     private void updateModel(TechneCube m) {
-        if (cubeName.hasChanged()){
+        if (cubeName.hasChanged()) {
+            cubeName.resetChanges();
             m.setName(cubeName.getBuffer());
         }
         if (cubePosX.hasChanged() || cubePosY.hasChanged() || cubePosZ.hasChanged()) {
@@ -97,19 +101,19 @@ public class CubeEditWindow extends InternalWindow {
             cubePosZ.resetChanges();
             m.setPos(new Vect3d(cubePosX.getValue() * pixel, cubePosY.getValue() * pixel, cubePosZ.getValue() * pixel));
         }
-        if(cubeSizeX.hasChanged() || cubeSizeY.hasChanged() || cubeSizeZ.hasChanged()) {
+        if (cubeSizeX.hasChanged() || cubeSizeY.hasChanged() || cubeSizeZ.hasChanged()) {
             cubeSizeX.resetChanges();
             cubeSizeY.resetChanges();
             cubeSizeZ.resetChanges();
             m.setSize(new Vect3d(cubeSizeX.getValue(), cubeSizeY.getValue(), cubeSizeZ.getValue()));
         }
-        if(cubeRotationX.hasChanged() || cubeRotationY.hasChanged() || cubeRotationZ.hasChanged()){
+        if (cubeRotationX.hasChanged() || cubeRotationY.hasChanged() || cubeRotationZ.hasChanged()) {
             cubeRotationX.resetChanges();
             cubeRotationY.resetChanges();
             cubeRotationZ.resetChanges();
             m.setRotation(new Vect3d(Math.toRadians(cubeRotationX.getValue()), Math.toRadians(cubeRotationY.getValue()), Math.toRadians(cubeRotationZ.getValue())));
         }
-        if (cubeRotPointX.hasChanged() || cubeRotPointY.hasChanged() || cubeRotPointZ.hasChanged()){
+        if (cubeRotPointX.hasChanged() || cubeRotPointY.hasChanged() || cubeRotPointZ.hasChanged()) {
             cubeRotPointX.resetChanges();
             cubeRotPointY.resetChanges();
             cubeRotPointZ.resetChanges();
@@ -122,9 +126,35 @@ public class CubeEditWindow extends InternalWindow {
             TechneCube m = (TechneCube) iModel;
             cubeModel = m;
             cubeName.setBuffer(m.getName());
+            cubeName.resetChanges();
+
+            cubePosX.setValue(m.getPos().getX()/pixel);
+            cubePosY.setValue(m.getPos().getY()/pixel);
+            cubePosZ.setValue(m.getPos().getZ()/pixel);
+            cubePosX.resetChanges();
+            cubePosY.resetChanges();
+            cubePosZ.resetChanges();
+
             cubeSizeX.setValue(m.getSize().getX());
             cubeSizeY.setValue(m.getSize().getY());
             cubeSizeZ.setValue(m.getSize().getZ());
+            cubeSizeX.resetChanges();
+            cubeSizeY.resetChanges();
+            cubeSizeZ.resetChanges();
+
+            cubeRotationX.setValue(Math.toDegrees(m.getRotation().getX()));
+            cubeRotationY.setValue(Math.toDegrees(m.getRotation().getY()));
+            cubeRotationZ.setValue(Math.toDegrees(m.getRotation().getZ()));
+            cubeRotationX.resetChanges();
+            cubeRotationY.resetChanges();
+            cubeRotationZ.resetChanges();
+
+            cubeRotPointX.setValue(m.getRotationPoint().getX()/pixel);
+            cubeRotPointY.setValue(m.getRotationPoint().getY()/pixel);
+            cubeRotPointZ.setValue(m.getRotationPoint().getZ()/pixel);
+            cubeRotPointX.resetChanges();
+            cubeRotPointY.resetChanges();
+            cubeRotPointZ.resetChanges();
         }
     }
 }

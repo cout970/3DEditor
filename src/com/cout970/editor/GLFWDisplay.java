@@ -29,7 +29,7 @@ public class GLFWDisplay {
     private static int HEIGHT = 720;
     private static float FOV = 90f;
     private static float ASPECT_RATIO = (float) WIDTH / (float) HEIGHT;
-    private static float zNEAR = 0.1f;
+    private static float zNEAR = 0.001f;
     private static float zFAR = 1000f;
     private static long window;
     private static boolean init = false;

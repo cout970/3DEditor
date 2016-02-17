@@ -12,4 +12,8 @@ public interface IModel {
     void render(boolean selected);
 
     List<IRayObstacle> getRayObstacles();
+
+    boolean isVisible();
+
+    void setVisible(boolean b);
 }

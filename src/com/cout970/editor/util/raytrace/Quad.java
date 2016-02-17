@@ -87,7 +87,7 @@ public class Quad implements IRayObstacle {
             r0.setObject(this);
             return r0;
         }
-        Triangle lower = new Triangle(a, c, d);
+        Triangle lower = new Triangle(a, d, c);
         RayTraceResult r1 = lower.rayTrace(ray);
         if (r1 != null){
             r1.setObject(this);

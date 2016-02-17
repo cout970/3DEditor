@@ -2,12 +2,14 @@ package com.cout970.editor.model;
 
 import com.cout970.editor.render.engine.DisplayList;
 import com.cout970.editor.render.engine.IRenderEngine;
+import com.cout970.editor.render.examples.Lines;
 import com.cout970.editor.render.texture.ITexture;
+import com.cout970.editor.render.texture.TextureStorage;
 import com.cout970.editor.util.Direction;
 import com.cout970.editor.util.Vect2d;
 import com.cout970.editor.util.Vect3d;
 import com.cout970.editor.util.raytrace.IRayObstacle;
-import com.cout970.editor.util.raytrace.Triangle;
+import com.cout970.editor.util.raytrace.OBB;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
@@ -22,6 +24,8 @@ public class TechneCube implements IModel {
     protected static final float[] BRITHNESS = {0.5F, 1.0F, 0.8F, 0.8F, 0.6F, 0.6F};
     protected Quad[] quadList;
     private DisplayList renderList;
+    private DisplayList selectedList;
+
     protected String name;
     protected Vect3d cubePos;
     protected Vect3d cubeSize;
@@ -31,6 +35,8 @@ public class TechneCube implements IModel {
     protected boolean flipped;
     protected Vect3d rotation;
     protected Vect3d rotationPoint;
+    private boolean visible = true;
+
 
     public TechneCube(String name, Vect3d cubePos, Vect3d cubeSize, ITexture texture, Vect2d textureOffset, int textureSize) {
         this.cubePos = cubePos;
@@ -128,8 +134,10 @@ public class TechneCube implements IModel {
         IRenderEngine eng = IRenderEngine.INSTANCE;
         if (renderList == null) {
             renderList = new DisplayList();
-            eng.startCompile(renderList);
+            selectedList = new DisplayList();
+
             createQuads();
+            eng.startCompile(renderList);
             eng.startDrawing(GL11.GL_QUADS);
             for (Quad q : quadList) {
                 float bright = BRITHNESS[q.getNormal().ordinal()];
@@ -143,15 +151,40 @@ public class TechneCube implements IModel {
             }
             eng.endDrawing();
             eng.endCompile();
+
+            eng.startCompile(selectedList);
+            Lines.cubeSelection(getSize().multiply(0.0625));
+            eng.endCompile();
         }
         texture.bind();
         eng.render(renderList);
+        if (selected) {
+            TextureStorage.EMPTY.bind();
+            eng.pushMatrix();
+            eng.translate(rotationPoint.getX(), rotationPoint.getY(), rotationPoint.getZ());
+            eng.rotate(Math.toDegrees(rotation.getX()), 1, 0, 0);
+            eng.rotate(Math.toDegrees(rotation.getY()), 0, 1, 0);
+            eng.rotate(Math.toDegrees(rotation.getZ()), 0, 0, 1);
+            eng.translate(-rotationPoint.getX(), -rotationPoint.getY(), -rotationPoint.getZ());
+            eng.translate(cubePos.getX(), cubePos.getY(), cubePos.getZ());
+            eng.render(selectedList);
+            eng.popMatrix();
+        }
     }
 
     @Override
     public List<IRayObstacle> getRayObstacles() {
-        return Collections.singletonList(new Triangle(getPos().add(0, 0, 0), getPos().add(1, 0, 0), getPos().add(0, 0, 1)));
-//        return Collections.singletonList(new OBB(getPos(), getSize().multiply(0.0625f), getRotation()));
+        return Collections.singletonList(new OBB(getPos(), getSize().multiply(0.0625f), getRotation(), getRotationPoint().copy().sub(cubePos)));
+    }
+
+    @Override
+    public boolean isVisible() {
+        return visible;
+    }
+
+    @Override
+    public void setVisible(boolean b) {
+        this.visible = b;
     }
 
     private void resetRenderList() {
@@ -232,17 +265,14 @@ public class TechneCube implements IModel {
             }
         }
 
+        Vect3d rotationPoint = this.rotationPoint.copy().sub(cubePos);
         for (Quad q : quadList) {
             for (int i = 0; i < 4; i++) {
-
-                if (rotation != null) {
-                    q.vertex[i].getPos().sub(rotationPoint);
-                    q.vertex[i].getPos().rotateX(rotation.getX());
-                    q.vertex[i].getPos().rotateY(rotation.getY());
-                    q.vertex[i].getPos().rotateZ(rotation.getZ());
-                    q.vertex[i].getPos().add(rotationPoint);
-                }
-
+                q.vertex[i].getPos().sub(rotationPoint);
+                q.vertex[i].getPos().rotateX(rotation.getX());
+                q.vertex[i].getPos().rotateY(rotation.getY());
+                q.vertex[i].getPos().rotateZ(rotation.getZ());
+                q.vertex[i].getPos().add(rotationPoint);
                 q.vertex[i].getPos().add(cubePos);
             }
         }

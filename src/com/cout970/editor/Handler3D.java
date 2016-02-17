@@ -56,13 +56,13 @@ public class Handler3D implements InputHandler.IMouseWheelCallback, InputHandler
             drawAxisGridY();
         }
         drawDebugLines();
-        ModelTree.INSTANCE.getAllModels().forEach(m -> m.render(false));
+        ModelTree.INSTANCE.getModelsToRender().forEach(m -> m.render(ModelTree.INSTANCE.getSelectedModels().contains(m)));
         if (ModelTree.INSTANCE.getSelectedModels().size() == 1) {
             IModel m = ModelTree.INSTANCE.getSelectedModels().get(0);
             if (m instanceof TechneCube) {
                 glPushMatrix();
                 Vect3d v = ((TechneCube) m).getRotationPoint();
-                v.add(((TechneCube) m).getPos());
+//                v.add(((TechneCube) m).getPos());
                 glTranslated(v.getX(), v.getY(), v.getZ());
                 sphere.render();
                 glPopMatrix();
@@ -203,7 +203,6 @@ public class Handler3D implements InputHandler.IMouseWheelCallback, InputHandler
                 for (IRayObstacle r : m.getRayObstacles()) {
                     RayTraceResult res = r.rayTrace(ray);
                     if (res != null) {
-                        Log.debug("hit: " + res);
                         hits.put(res, m);
                     }
                 }
@@ -227,7 +226,11 @@ public class Handler3D implements InputHandler.IMouseWheelCallback, InputHandler
                 ModelTree.INSTANCE.clearSelection();
             }
             if (best != null) {
-                ModelTree.INSTANCE.addModelToSelection(model);
+                if(ModelTree.INSTANCE.getSelectedModels().contains(model)){
+                    ModelTree.INSTANCE.removeModelFromSelection(model);
+                }else {
+                    ModelTree.INSTANCE.addModelToSelection(model);
+                }
             }
 
             glPopMatrix();

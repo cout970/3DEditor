@@ -22,9 +22,9 @@ public class ModelTree {
 
     private ModelTree() {}
 
-    public List<IModel> getAllModels() {
+    public List<IModel> getModelsToRender() {
         List<IModel> list = new ArrayList<>(models.size() + 1);
-        list.addAll(models);
+        models.stream().filter(IModel::isVisible).forEach(list::add);
         list.add(modelBase);
         return list;
     }
@@ -41,7 +41,7 @@ public class ModelTree {
         selectedModels.add(m);
     }
 
-    public void removeModelToSelection(IModel m){
+    public void removeModelFromSelection(IModel m){
         selectedModels.remove(m);
     }
 

@@ -10,7 +10,7 @@ import com.cout970.editor.util.Vect2i;
 /**
  * Created by cout970 on 13/02/2016.
  */
-public class NumberEdit implements ISizedComponent {
+public class NumberEdit implements ISizedComponent, ILockable {
 
     private static Vect2i size = new Vect2i(78, 18);
     private ISizedComponent parent;
@@ -183,5 +183,15 @@ public class NumberEdit implements ISizedComponent {
 
     public void resetChanges(){
         changes = false;
+    }
+
+    @Override
+    public boolean isLocked() {
+        return number.isLocked();
+    }
+
+    @Override
+    public void setLocked(boolean b) {
+        number.setLocked(b);
     }
 }
