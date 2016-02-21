@@ -161,11 +161,13 @@ public class TechneCube implements IModel {
         if (selected) {
             TextureStorage.EMPTY.bind();
             eng.pushMatrix();
+
             eng.translate(rotationPoint.getX(), rotationPoint.getY(), rotationPoint.getZ());
-            eng.rotate(Math.toDegrees(rotation.getX()), 1, 0, 0);
-            eng.rotate(Math.toDegrees(rotation.getY()), 0, 1, 0);
             eng.rotate(Math.toDegrees(rotation.getZ()), 0, 0, 1);
+            eng.rotate(Math.toDegrees(rotation.getY()), 0, 1, 0);
+            eng.rotate(Math.toDegrees(rotation.getX()), 1, 0, 0);
             eng.translate(-rotationPoint.getX(), -rotationPoint.getY(), -rotationPoint.getZ());
+
             eng.translate(cubePos.getX(), cubePos.getY(), cubePos.getZ());
             eng.render(selectedList);
             eng.popMatrix();

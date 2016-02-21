@@ -62,7 +62,6 @@ public class Handler3D implements InputHandler.IMouseWheelCallback, InputHandler
             if (m instanceof TechneCube) {
                 glPushMatrix();
                 Vect3d v = ((TechneCube) m).getRotationPoint();
-//                v.add(((TechneCube) m).getPos());
                 glTranslated(v.getX(), v.getY(), v.getZ());
                 sphere.render();
                 glPopMatrix();
