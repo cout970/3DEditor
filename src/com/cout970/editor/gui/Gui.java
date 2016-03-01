@@ -10,6 +10,8 @@ import com.cout970.editor.util.Vect2i;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -23,7 +25,7 @@ public class Gui implements IGui, InputHandler.IKeyboardCallback, InputHandler.I
     private Vect2i size;
 
     public Gui() {
-        components = new ArrayList<>();
+        components = new LinkedList<>();
         renderer = IGuiRenderer.INSTANCE;
         handler = GLFWDisplay.handler2D;
         InputHandler.registerKeyboardCallback(this);
@@ -34,8 +36,14 @@ public class Gui implements IGui, InputHandler.IKeyboardCallback, InputHandler.I
     }
 
     public void render() {
-        components.forEach(i -> i.renderBackground(this, InputHandler.getCursorPos().toVect2i(), 0));
-        components.forEach(i -> i.renderForeground(this, InputHandler.getCursorPos().toVect2i()));
+        List<IGuiComponent> reverse = new LinkedList<>(components);
+        reverse.sort((o1, o2) -> -compare(o1, o2));
+        for(IGuiComponent c : reverse){
+            c.renderBackground(this, InputHandler.getCursorPos().toVect2i(), 0);
+        }
+        for(IGuiComponent c : reverse){
+            c.renderForeground(this, InputHandler.getCursorPos().toVect2i());
+        }
     }
 
     public void onResize() {
@@ -55,12 +63,19 @@ public class Gui implements IGui, InputHandler.IKeyboardCallback, InputHandler.I
         if (action == GLFW.GLFW_PRESS) {
             boolean done = false;
             for (IGuiComponent c : components) {
-                if (c instanceof ISizedComponent) {
-                    if (IGui.isInside(pos, ((ISizedComponent) c).getPos(), ((ISizedComponent) c).getSize())) {
-                        c.onMouseClick(this, pos.copy(), b);
-                        done = true;
-                        break;
+                if (c.isMouseOnTop(this, pos.copy(), b)) {
+                    c.onMouseClick(this, pos.copy(), b);
+                    done = true;
+                    c.setLevel(0);
+                    int level = 1;
+                    for (IGuiComponent c1 : components) {
+                        if (c != c1) {
+                            c1.setLevel(level);
+                            level++;
+                        }
                     }
+                    Collections.sort(components, this::compare);
+                    break;
                 }
             }
             if (!done) {
@@ -81,6 +96,7 @@ public class Gui implements IGui, InputHandler.IKeyboardCallback, InputHandler.I
 
     @Override
     public void addComponent(IGuiComponent comp) {
+        comp.setLevel(components.size());
         components.add(comp);
         onResize();
     }
@@ -88,6 +104,7 @@ public class Gui implements IGui, InputHandler.IKeyboardCallback, InputHandler.I
     @Override
     public void removeComponent(IGuiComponent comp) {
         components.remove(comp);
+        components.sort(this::compare);
     }
 
     @Override
@@ -140,10 +157,8 @@ public class Gui implements IGui, InputHandler.IKeyboardCallback, InputHandler.I
         components.forEach(i -> i.onCharPress(this, key));
     }
 
-    public void bringToTop(IGuiComponent comp){
-        if(components.contains(comp)){
-            components.sort((o1, o2) -> o1 == comp ? 1 : o2 == comp ? -1 : 0);
-        }
+    public int compare(IGuiComponent a, IGuiComponent b) {
+        return a.getLevel() - b.getLevel();
     }
 
     public boolean blockMouse() {

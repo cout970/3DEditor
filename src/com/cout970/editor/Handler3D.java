@@ -1,5 +1,6 @@
 package com.cout970.editor;
 
+import com.cout970.editor.export.SaveHandler;
 import com.cout970.editor.model.IModel;
 import com.cout970.editor.model.TechneCube;
 import com.cout970.editor.render.engine.IRenderEngine;
@@ -15,6 +16,7 @@ import com.cout970.editor.util.raytrace.Ray;
 import com.cout970.editor.util.raytrace.RayTraceResult;
 import org.lwjgl.glfw.GLFW;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -59,7 +61,10 @@ public class Handler3D implements InputHandler.IMouseWheelCallback, InputHandler
             drawAxisGridY();
         }
         drawDebugLines();
-        ModelTree.INSTANCE.getModelsToRender().forEach(m -> m.render(ModelTree.INSTANCE.getSelectedModels().contains(m)));
+        ModelTree tree = ModelTree.INSTANCE;
+        for(IModel m : tree.getModelsToRender()){
+            m.render(tree.getSelectedModels().contains(m));
+        }
         if (ModelTree.INSTANCE.getSelectedModels().size() == 1) {
             IModel m = ModelTree.INSTANCE.getSelectedModels().get(0);
             if (m instanceof TechneCube) {
@@ -177,6 +182,9 @@ public class Handler3D implements InputHandler.IMouseWheelCallback, InputHandler
     public void init() {
         sphere = new Sphere(0.0625f, TextureStorage.ROTATION_POINT);
         InputHandler.registerMouseButtonCallback(this);
+        ModelTree.INSTANCE = SaveHandler.INSTANCE.load(new File("./modelCrusherLeft.tcn"));
+        //TODO test and finish the save function
+//        SaveHandler.INSTANCE.save(new File("./test.tcn"), ModelTree.INSTANCE);
     }
 
     @Override

@@ -23,6 +23,7 @@ public class InternalWindow implements ISizedComponent {
     private boolean moving;
     private Vect2i clickPoint;
     protected boolean hide;
+    protected int level;
     protected List<IGuiComponent> subParts;
 
     public InternalWindow(Vect2i size) {
@@ -131,5 +132,18 @@ public class InternalWindow implements ISizedComponent {
 
     public void setHide(boolean hide) {
         this.hide = hide;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    @Override
+    public boolean isMouseOnTop(IGui gui, Vect2i mouse, InputHandler.MouseButton button) {
+        return !hide && IGui.isInside(mouse, getPos(), getSize());
     }
 }

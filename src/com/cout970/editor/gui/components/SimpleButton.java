@@ -12,6 +12,17 @@ import java.util.function.Function;
 public class SimpleButton extends AbstractStateButton {
 
     protected Function<ButtonState, Vect2i> uvMapper;
+    protected int level;
+
+    @Override
+    public int getLevel() {
+        return level;
+    }
+
+    @Override
+    public void setLevel(int level) {
+        this.level = level;
+    }
 
     public SimpleButton(Vect2i pos, Vect2i size, ITexture texture, String text, ButtonListener listener, Function<ButtonState, Vect2i> uvMapper) {
         super(pos, size, texture, text, listener);

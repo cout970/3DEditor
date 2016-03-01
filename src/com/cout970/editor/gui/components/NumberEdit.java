@@ -22,6 +22,17 @@ public class NumberEdit implements ISizedComponent, ILockable {
     private boolean floats;
     private Vect2i lastTickMouse;
     private boolean changes;
+    protected int level;
+
+    @Override
+    public int getLevel() {
+        return level;
+    }
+
+    @Override
+    public void setLevel(int level) {
+        this.level = level;
+    }
 
     public NumberEdit(ISizedComponent parent, Vect2i offset, boolean floats) {
         this.parent = parent;
@@ -177,6 +188,11 @@ public class NumberEdit implements ISizedComponent, ILockable {
         return size.copy();
     }
 
+    @Override
+    public boolean isMouseOnTop(IGui gui, Vect2i mouse, InputHandler.MouseButton button) {
+        return IGui.isInside(mouse, getPos(), getSize());
+    }
+
     public boolean hasChanged() {
         return changes;
     }
@@ -194,4 +210,6 @@ public class NumberEdit implements ISizedComponent, ILockable {
     public void setLocked(boolean b) {
         number.setLocked(b);
     }
+
+
 }

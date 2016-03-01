@@ -16,6 +16,17 @@ public class RotationBar implements ISizedComponent {
     private NumberEdit parent;
     private SimpleButton button;
     private double cursor;
+    protected int level;
+
+    @Override
+    public int getLevel() {
+        return level;
+    }
+
+    @Override
+    public void setLevel(int level) {
+        this.level = level;
+    }
 
     public RotationBar(NumberEdit parent) {
         this.parent = parent;
@@ -43,6 +54,11 @@ public class RotationBar implements ISizedComponent {
     @Override
     public Vect2i getSize() {
         return size.copy();
+    }
+
+    @Override
+    public boolean isMouseOnTop(IGui gui, Vect2i mouse, InputHandler.MouseButton button) {
+        return IGui.isInside(mouse, getPos(), getSize());
     }
 
     @Override

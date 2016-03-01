@@ -1,5 +1,6 @@
 package com.cout970.editor.gui;
 
+import com.cout970.editor.InputHandler;
 import com.cout970.editor.util.Vect2i;
 
 /**
@@ -10,4 +11,8 @@ public interface ISizedComponent extends IGuiComponent {
     Vect2i getPos();
 
     Vect2i getSize();
+
+    default boolean isMouseOnTop(IGui gui, Vect2i mouse, InputHandler.MouseButton button){
+        return IGui.isInside(mouse, getPos(), getSize());
+    }
 }

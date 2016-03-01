@@ -15,12 +15,16 @@ import java.util.List;
  */
 public class ModelTree {
 
-    public static final ModelTree INSTANCE = new ModelTree();
+    public static ModelTree INSTANCE = new ModelTree();
     private IModel modelBase;
     private List<IModel> models = new LinkedList<>();
     private List<IModel> selectedModels = new LinkedList<>();
 
-    private ModelTree() {
+    public ModelTree() {
+    }
+
+    public ModelTree(List<TechneCube> models) {
+        this.models.addAll(models);
     }
 
     public List<IModel> getModelsToRender() {

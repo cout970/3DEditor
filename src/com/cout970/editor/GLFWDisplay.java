@@ -145,7 +145,7 @@ public class GLFWDisplay {
 
         set3D();
 
-        glClearColor(0.89f, 0.882f, 0.867f, 1.0f);
+        glClearColor(0.89f/2, 0.882f/2, 0.867f/2, 1.0f);
 //        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         handler2D = new Handler2D();

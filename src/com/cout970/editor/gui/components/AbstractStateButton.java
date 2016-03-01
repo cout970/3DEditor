@@ -6,6 +6,7 @@ import com.cout970.editor.gui.render.IGuiRenderer;
 import com.cout970.editor.render.texture.ITexture;
 import com.cout970.editor.util.Color;
 import com.cout970.editor.util.Vect2i;
+import org.lwjgl.opengl.GL11;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +39,7 @@ public abstract class AbstractStateButton extends AbstractButton {
 
     @Override
     protected void renderButton(IGui gui, IGuiRenderer rend, Vect2i mouse) {
+        GL11.glColor4f(1, 1, 1, 1);
         if (!gui.isButtonDown(InputHandler.MouseButton.LEFT) && !gui.isButtonDown(InputHandler.MouseButton.RIGHT)) {
             pressed = false;
             state = onButtonRelease();

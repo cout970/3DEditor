@@ -21,4 +21,12 @@ public interface IGuiComponent {
     void onCharPress(IGui gui, int key);
 
     void onWheelMoves(IGui gui, double amount);
+
+    int getLevel();
+
+    void setLevel(int level);
+
+    default boolean isMouseOnTop(IGui gui, Vect2i mouse, InputHandler.MouseButton button){
+        return false;
+    }
 }

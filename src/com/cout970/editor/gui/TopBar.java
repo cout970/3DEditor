@@ -33,6 +33,17 @@ public class TopBar implements ISizedComponent {
     private ModelTreeWindow modelTree;
     private TextureEditorWindow textureEditor;
     private GroupEditWindow groupEditor;
+    protected int level;
+
+    @Override
+    public int getLevel() {
+        return level;
+    }
+
+    @Override
+    public void setLevel(int level) {
+        this.level = level;
+    }
 
     public void init() {
         int size = BAR_HEIGHT - 2;
@@ -157,5 +168,10 @@ public class TopBar implements ISizedComponent {
     @Override
     public Vect2i getSize() {
         return new Vect2i(GLFWDisplay.getFrameBufferSize().getX(), BAR_HEIGHT);
+    }
+
+    @Override
+    public boolean isMouseOnTop(IGui gui, Vect2i mouse, InputHandler.MouseButton button) {
+        return IGui.isInside(mouse, getPos(), getSize());
     }
 }

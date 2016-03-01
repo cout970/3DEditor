@@ -25,6 +25,17 @@ public class TextBox implements ISizedComponent, ILockable {
     protected CenterType type;
     protected boolean changes;
     protected boolean locked;
+    protected int level;
+
+    @Override
+    public int getLevel() {
+        return level;
+    }
+
+    @Override
+    public void setLevel(int level) {
+        this.level = level;
+    }
 
     public TextBox(ISizedComponent parent, Vect2i offset, int lenght) {
         this.parent = parent;
@@ -241,6 +252,11 @@ public class TextBox implements ISizedComponent, ILockable {
     @Override
     public Vect2i getSize() {
         return size.copy();
+    }
+
+    @Override
+    public boolean isMouseOnTop(IGui gui, Vect2i mouse, InputHandler.MouseButton button) {
+        return IGui.isInside(mouse, getPos(), getSize());
     }
 
     public boolean hasChanged() {
