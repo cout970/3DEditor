@@ -5,7 +5,8 @@ import com.cout970.editor.render.texture.TextureStorage;
 import com.cout970.editor.util.Vect2d;
 import com.cout970.editor.util.Vect2i;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glColor3f;
+import static org.lwjgl.opengl.GL11.glColor4f;
 
 /**
  * Created by cout970 on 11/02/2016.
@@ -19,7 +20,7 @@ public class FontRenderer implements IFontRenderer {
 
     @Override
     public int drawStringWithShadow(String text, float x, float y, int color) {
-        print(x+1, y+1, 0, text);
+        print(x + 1, y + 1, 0, text);
         print(x, y, color, text);
         return 0;
     }
@@ -32,7 +33,7 @@ public class FontRenderer implements IFontRenderer {
 
     @Override
     public int getStringWidth(String text) {
-        return text.length()*8;
+        return text.length() * 8;
     }
 
     @Override

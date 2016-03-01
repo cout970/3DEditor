@@ -2,7 +2,6 @@ package com.cout970.editor;
 
 import com.cout970.editor.gui.Gui;
 import com.cout970.editor.gui.TopBar;
-import com.cout970.editor.gui.windows.CubeEditWindow;
 import com.cout970.editor.render.engine.IRenderEngine;
 import com.cout970.editor.render.texture.TextureStorage;
 import com.cout970.editor.util.Vect2i;
@@ -21,11 +20,14 @@ public class Handler2D implements InputHandler.IKeyboardCallback {
     private Gui gui;
     private TopBar topBar;
 
-    public void init(){
+    public void init() {
         gui = new Gui();
-        gui.addComponent(new CubeEditWindow());
         gui.addComponent(topBar = new TopBar());
         topBar.init();
+        gui.addComponent(topBar.getCubeEditor());
+        gui.addComponent(topBar.getModelTree());
+        gui.addComponent(topBar.getTextureEditor());
+        gui.addComponent(topBar.getGroupEditor());
         ModelTree.INSTANCE.init();
     }
 

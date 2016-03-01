@@ -14,6 +14,7 @@ public class Pair<K, V> implements Serializable {
         this.key = key;
         this.value = value;
     }
+
     public V getValue() {
         return value;
     }

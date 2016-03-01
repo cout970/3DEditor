@@ -31,7 +31,7 @@ public class Ray {
         this.end = end;
     }
 
-    public Ray copy(){
+    public Ray copy() {
         return new Ray(start, end);
     }
 

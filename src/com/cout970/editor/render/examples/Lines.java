@@ -8,11 +8,11 @@ import com.cout970.editor.util.Vect3d;
 public class Lines {
 
     public static void line(Vect3d a, Vect3d b) {
-        Cube c = new Cube(a.copy().add(new Vect3d(1, 1, 1).multiply(-0.0625/16)), b.copy().add(new Vect3d(1, 1, 1).multiply(0.0625/16)));
+        Cube c = new Cube(a.copy().add(new Vect3d(1, 1, 1).multiply(-0.0625 / 16)), b.copy().add(new Vect3d(1, 1, 1).multiply(0.0625 / 16)));
         c.render();
     }
 
-    public static void cubeSelection(Vect3d size){
+    public static void cubeSelection(Vect3d size) {
         Vect3d start = Vect3d.nullVector();
         Vect3d end = size;
         Vect3d vertex1 = new Vect3d(start.getX(), start.getY(), start.getZ());
@@ -33,7 +33,7 @@ public class Lines {
 
         Vect3d[][] quads = {down, up, north, south, west, east};
 
-        for(Vect3d[] quad : quads) {
+        for (Vect3d[] quad : quads) {
             for (int i = 0; i < 4; i++) {
                 line(quad[i], quad[(i + 1) % 4]);
             }

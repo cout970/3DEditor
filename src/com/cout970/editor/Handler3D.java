@@ -5,7 +5,10 @@ import com.cout970.editor.model.TechneCube;
 import com.cout970.editor.render.engine.IRenderEngine;
 import com.cout970.editor.render.examples.Sphere;
 import com.cout970.editor.render.texture.TextureStorage;
-import com.cout970.editor.util.*;
+import com.cout970.editor.util.RotationVect;
+import com.cout970.editor.util.Vect2d;
+import com.cout970.editor.util.Vect2i;
+import com.cout970.editor.util.Vect3d;
 import com.cout970.editor.util.raytrace.IRayObstacle;
 import com.cout970.editor.util.raytrace.ProjectionUtil;
 import com.cout970.editor.util.raytrace.Ray;
@@ -225,9 +228,9 @@ public class Handler3D implements InputHandler.IMouseWheelCallback, InputHandler
                 ModelTree.INSTANCE.clearSelection();
             }
             if (best != null) {
-                if(ModelTree.INSTANCE.getSelectedModels().contains(model)){
+                if (ModelTree.INSTANCE.getSelectedModels().contains(model)) {
                     ModelTree.INSTANCE.removeModelFromSelection(model);
-                }else {
+                } else {
                     ModelTree.INSTANCE.addModelToSelection(model);
                 }
             }

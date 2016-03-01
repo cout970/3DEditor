@@ -20,7 +20,8 @@ public class ModelTree {
     private List<IModel> models = new LinkedList<>();
     private List<IModel> selectedModels = new LinkedList<>();
 
-    private ModelTree() {}
+    private ModelTree() {
+    }
 
     public List<IModel> getModelsToRender() {
         List<IModel> list = new ArrayList<>(models.size() + 1);
@@ -37,15 +38,15 @@ public class ModelTree {
         return selectedModels;
     }
 
-    public void addModelToSelection(IModel m){
+    public void addModelToSelection(IModel m) {
         selectedModels.add(m);
     }
 
-    public void removeModelFromSelection(IModel m){
+    public void removeModelFromSelection(IModel m) {
         selectedModels.remove(m);
     }
 
-    public void clearSelection(){
+    public void clearSelection() {
         selectedModels.clear();
     }
 
@@ -57,5 +58,9 @@ public class ModelTree {
         List<IModel> list = new ArrayList<>(models.size() + 1);
         list.addAll(models);
         return list;
+    }
+
+    public int getNumberOfModels() {
+        return models.size();
     }
 }

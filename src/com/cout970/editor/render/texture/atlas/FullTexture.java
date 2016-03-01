@@ -2,37 +2,37 @@ package com.cout970.editor.render.texture.atlas;
 
 import com.cout970.editor.render.texture.ITexture;
 
-public class FullTexture implements ITextureSprite{
+public class FullTexture implements ITextureSprite {
 
-	public ITexture texture;
-	
-	public FullTexture(ITexture tex){
-		texture = tex;
-	}
-	
-	@Override
-	public ITexture getParent() {
-		return texture;
-	}
+    public ITexture texture;
 
-	@Override
-	public int getTextureSizeX() {
-		return texture.getTextureSizeX();
-	}
+    public FullTexture(ITexture tex) {
+        texture = tex;
+    }
 
-	@Override
-	public int getTextureSizeY() {		
-		return texture.getTextureSizeY();
-	}
+    @Override
+    public ITexture getParent() {
+        return texture;
+    }
 
-	@Override
-	public double getTextureU(float offset) {
-		return offset;
-	}
+    @Override
+    public int getTextureSizeX() {
+        return texture.getTextureSizeX();
+    }
 
-	@Override
-	public double getTextureV(float offset) {
-		return offset;
-	}
+    @Override
+    public int getTextureSizeY() {
+        return texture.getTextureSizeY();
+    }
+
+    @Override
+    public double getTextureU(float offset) {
+        return offset;
+    }
+
+    @Override
+    public double getTextureV(float offset) {
+        return offset;
+    }
 
 }

@@ -40,7 +40,7 @@ public abstract class AbstractButton implements IGuiComponent {
         return false;
     }
 
-    protected Vect2i getPos(IGui gui){
+    protected Vect2i getPos(IGui gui) {
         return pos.copy().add(gui.getGuiStartingPoint());
     }
 
@@ -63,13 +63,15 @@ public abstract class AbstractButton implements IGuiComponent {
     public void onWheelMoves(IGui gui, double amount) {
 
     }
+
     @Override
     public void onResize(IGui gui) {
 
     }
 
     @Override
-    public void onCharPress(IGui gui, int key) {}
+    public void onCharPress(IGui gui, int key) {
+    }
 
 
     public void setPos(Vect2i pos) {

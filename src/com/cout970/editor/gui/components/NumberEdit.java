@@ -67,7 +67,7 @@ public class NumberEdit implements ISizedComponent, ILockable {
         setValue(0);
     }
 
-    public double getValueClamped(){
+    public double getValueClamped() {
         return Double.parseDouble(String.format("%.3f", getValue()).replace(',', '.'));
     }
 
@@ -181,7 +181,7 @@ public class NumberEdit implements ISizedComponent, ILockable {
         return changes;
     }
 
-    public void resetChanges(){
+    public void resetChanges() {
         changes = false;
     }
 

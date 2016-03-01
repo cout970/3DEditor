@@ -6,5 +6,6 @@ package com.cout970.editor.gui.components;
 public interface ILockable {
 
     boolean isLocked();
+
     void setLocked(boolean b);
 }

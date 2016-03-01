@@ -264,7 +264,7 @@ public class TextureManager implements ITextureLoader {
             InputStream source = Thread.currentThread().getContextClassLoader()
                     .getResourceAsStream(resource.getCompletePath());
             if (source == null)
-                throw new FileNotFoundException(resource.getCompletePath()+", "+resource.getFile().getAbsolutePath());
+                throw new FileNotFoundException(resource.getCompletePath() + ", " + resource.getFile().getAbsolutePath());
 
             try {
                 ReadableByteChannel rbc = Channels.newChannel(source);

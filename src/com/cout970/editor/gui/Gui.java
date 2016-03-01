@@ -53,7 +53,19 @@ public class Gui implements IGui, InputHandler.IKeyboardCallback, InputHandler.I
     @Override
     public void onMouseClick(Vect2i pos, InputHandler.MouseButton b, int action) {
         if (action == GLFW.GLFW_PRESS) {
-            components.forEach(i -> i.onMouseClick(this, pos.copy(), b));
+            boolean done = false;
+            for (IGuiComponent c : components) {
+                if (c instanceof ISizedComponent) {
+                    if (IGui.isInside(pos, ((ISizedComponent) c).getPos(), ((ISizedComponent) c).getSize())) {
+                        c.onMouseClick(this, pos.copy(), b);
+                        done = true;
+                        break;
+                    }
+                }
+            }
+            if (!done) {
+                components.forEach(i -> i.onMouseClick(this, pos.copy(), b));
+            }
         }
     }
 
@@ -128,12 +140,18 @@ public class Gui implements IGui, InputHandler.IKeyboardCallback, InputHandler.I
         components.forEach(i -> i.onCharPress(this, key));
     }
 
-    public boolean blockMouse(){
+    public void bringToTop(IGuiComponent comp){
+        if(components.contains(comp)){
+            components.sort((o1, o2) -> o1 == comp ? 1 : o2 == comp ? -1 : 0);
+        }
+    }
+
+    public boolean blockMouse() {
         if (InputHandler.getCursorPos().getY() < TopBar.BAR_HEIGHT)
             return true;
-        for(IGuiComponent c : components){
-            if (c instanceof ISizedComponent){
-                if (IGui.isInside(InputHandler.getCursorPos().toVect2i(), ((ISizedComponent) c).getPos(), ((ISizedComponent) c).getSize())){
+        for (IGuiComponent c : components) {
+            if (c instanceof ISizedComponent) {
+                if (IGui.isInside(InputHandler.getCursorPos().toVect2i(), ((ISizedComponent) c).getPos(), ((ISizedComponent) c).getSize())) {
                     return true;
                 }
             }

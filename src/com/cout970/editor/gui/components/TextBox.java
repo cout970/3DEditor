@@ -68,7 +68,7 @@ public class TextBox implements ISizedComponent, ILockable {
                             new Vect2i(pos0.getX() + pointer * 8 + 4, pos0.getY() + 8 + 6), new Color(0));
                 }
             }
-        }else{
+        } else {
             gui.getGuiRenderer().drawRectangle(parent.getPos().add(offset).add(margin), parent.getPos().add(offset).add(size).sub(margin), new Color(0x777777));
         }
     }

@@ -127,8 +127,8 @@ public class Vect3d {
     }
 
     //to this vector v is proyected
-    public Vect3d proyection(Vect3d v){
-        return v.copy().multiply(dotProduct(v)/v.magSquared());
+    public Vect3d proyection(Vect3d v) {
+        return v.copy().multiply(dotProduct(v) / v.magSquared());
     }
 
     /**

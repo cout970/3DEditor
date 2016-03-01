@@ -36,9 +36,9 @@ public class SimpleButton extends AbstractStateButton {
         super(pos, size, texture, text, tooltip, listener);
         Vect2i offset2 = offset.copy();
         Vect2i offset3 = offset.copy().add(0, size.getY());
-        Vect2i offset4 = offset.copy().add(0, size.getY()*2);
+        Vect2i offset4 = offset.copy().add(0, size.getY() * 2);
         this.uvMapper = buttonState -> {
-            switch (buttonState){
+            switch (buttonState) {
                 case NORMAL:
                     return offset2;
                 case HOVER:

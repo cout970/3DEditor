@@ -32,9 +32,9 @@ public class Sphere {
                 for (int k = 0; k < 2; k++) {
                     eng.addTextureUV(0, 0);
                     eng.addVertex(
-                            radius * Math.cos(i+increment*k) * Math.cos(j+increment*k),
-                            radius * Math.cos(i+increment*k) * Math.sin(j+increment*k),
-                            radius * Math.sin(i+increment*k));
+                            radius * Math.cos(i + increment * k) * Math.cos(j + increment * k),
+                            radius * Math.cos(i + increment * k) * Math.sin(j + increment * k),
+                            radius * Math.sin(i + increment * k));
                 }
             }
         }

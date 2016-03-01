@@ -170,6 +170,7 @@ public class InputHandler {
     public interface ITextCallback {
         void onCharPress(int key);
     }
+
     public enum MouseButton {
         LEFT, RIGHT, MIDDLE;
 

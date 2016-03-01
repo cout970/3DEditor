@@ -56,10 +56,10 @@ public class RotationBar implements ISizedComponent {
         gui.getGuiRenderer().drawRectangle(getPos(), getPos().add(getSize()), new Color(0));
         gui.getGuiRenderer().drawRectangle(getPos().add(margin), getPos().add(getSize()).sub(margin), new Color(0x999999));
         gui.getGuiRenderer().drawRectangle(getPos().add(0, getSize().getY() / 2 - 1), getPos().add(getSize().getX(), getSize().getY() / 2 + 1), new Color(0x333333));
-        double val = parent.getValue()%360;
-        if (val > 180)val -= 360;
-        if (val < -180)val += 360;
-        cursor = val/180d;
+        double val = parent.getValue() % 360;
+        if (val > 180) val -= 360;
+        if (val < -180) val += 360;
+        cursor = val / 180d;
         double x = getSize().getX() / 2D - 7;
         button.setPos(getPos().add((int) (cursor * x + x), 1));
         button.renderBackground(gui, mouse, partialTicks);

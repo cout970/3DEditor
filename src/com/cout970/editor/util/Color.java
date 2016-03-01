@@ -38,6 +38,6 @@ public class Color {
     }
 
     public String toString() {
-        return "[0x" + Integer.toHexString(getRed()) + Integer.toHexString(getGreen()) + Integer.toHexString(getBlue())+", red: "+getRed()+", green: "+getGreen()+", blue: "+getBlue()+"]";
+        return "[0x" + Integer.toHexString(getRed()) + Integer.toHexString(getGreen()) + Integer.toHexString(getBlue()) + ", red: " + getRed() + ", green: " + getGreen() + ", blue: " + getBlue() + "]";
     }
 }

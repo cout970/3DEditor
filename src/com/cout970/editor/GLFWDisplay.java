@@ -240,7 +240,7 @@ public class GLFWDisplay {
         @Override
         public void invoke(long window, int x, int y) {
 //            Log.debug("x: " + x + ", y: " + y);
-            frameBufferSize = new Vect2i(x,y);
+            frameBufferSize = new Vect2i(x, y);
             if (init) {
                 glViewport(0, 0, x, y);
                 handler2D.onResize();

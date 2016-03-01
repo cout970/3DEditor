@@ -19,8 +19,8 @@ public class Quad implements IRayObstacle {
         this.d = d.copy();
     }
 
-    public void setVertex(int pos, Vect3d vertex){
-        switch (pos){
+    public void setVertex(int pos, Vect3d vertex) {
+        switch (pos) {
             case 0:
                 setA(vertex);
             case 1:
@@ -32,8 +32,8 @@ public class Quad implements IRayObstacle {
         }
     }
 
-    public Vect3d getVertex(int pos){
-        switch (pos){
+    public Vect3d getVertex(int pos) {
+        switch (pos) {
             case 0:
                 return getA();
             case 1:
@@ -83,13 +83,13 @@ public class Quad implements IRayObstacle {
     public RayTraceResult rayTrace(Ray ray) {
         Triangle upper = new Triangle(a, b, c);
         RayTraceResult r0 = upper.rayTrace(ray);
-        if (r0 != null){
+        if (r0 != null) {
             r0.setObject(this);
             return r0;
         }
         Triangle lower = new Triangle(a, d, c);
         RayTraceResult r1 = lower.rayTrace(ray);
-        if (r1 != null){
+        if (r1 != null) {
             r1.setObject(this);
             return r1;
         }

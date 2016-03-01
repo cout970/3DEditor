@@ -51,12 +51,12 @@ public class InternalWindow implements ISizedComponent {
         if (pos.getY() < TopBar.BAR_HEIGHT) {
             pos.setY(TopBar.BAR_HEIGHT);
         }
-        if(gui == null)return;
-        if (pos.getX()+size.getX() > gui.getGuiSize().getX()) {
-            pos.setX(gui.getGuiSize().getX()-size.getX());
+        if (gui == null) return;
+        if (pos.getX() + size.getX() > gui.getGuiSize().getX()) {
+            pos.setX(gui.getGuiSize().getX() - size.getX());
         }
-        if (pos.getY()+size.getY() > gui.getGuiSize().getY()) {
-            pos.setY(gui.getGuiSize().getY()-size.getY());
+        if (pos.getY() + size.getY() > gui.getGuiSize().getY()) {
+            pos.setY(gui.getGuiSize().getY() - size.getY());
         }
     }
 
@@ -68,14 +68,14 @@ public class InternalWindow implements ISizedComponent {
     @Override
     public void renderBackground(IGui gui, Vect2i mouse, float partialTicks) {
 
-        if (moving){
-            if (!gui.isButtonDown(InputHandler.MouseButton.LEFT)){
+        if (moving) {
+            if (!gui.isButtonDown(InputHandler.MouseButton.LEFT)) {
                 moving = false;
-            }else{
+            } else {
                 setPos(mouse.copy().sub(clickPoint));
             }
         }
-        if(!hide) {
+        if (!hide) {
             IGuiRenderer rend = gui.getGuiRenderer();
             Vect2i margin = new Vect2i(2, 2);
             rend.drawRectangle(getPos(), getPos().add(getSize()), new Color(0x666666));
@@ -88,18 +88,18 @@ public class InternalWindow implements ISizedComponent {
 
     @Override
     public void renderForeground(IGui gui, Vect2i mouse) {
-        if(hide)return;
+        if (hide) return;
         subParts.forEach(i -> i.renderForeground(gui, mouse.copy()));
     }
 
     @Override
     public void onMouseClick(IGui gui, Vect2i mouse, InputHandler.MouseButton button) {
-        if(hide)return;
+        if (hide) return;
         if (button == InputHandler.MouseButton.LEFT) {
-            if(IGui.isInside(mouse, getPos(), new Vect2i(getSize().getX()-10, 12))) {
+            if (IGui.isInside(mouse, getPos(), new Vect2i(getSize().getX() - 10, 12))) {
                 moving = true;
                 clickPoint = mouse.copy().sub(getPos());
-            }else if(IGui.isInside(mouse, getPos().add(getSize().getX()-12, 0), new Vect2i(12, 12))){
+            } else if (IGui.isInside(mouse, getPos().add(getSize().getX() - 12, 0), new Vect2i(12, 12))) {
                 hide = true;
             }
         }
@@ -108,20 +108,28 @@ public class InternalWindow implements ISizedComponent {
 
     @Override
     public boolean onKeyPressed(IGui gui, int key, int scancode, int action) {
-        if(hide)return false;
+        if (hide) return false;
         subParts.forEach(i -> i.onKeyPressed(gui, key, scancode, action));
         return false;
     }
 
     @Override
     public void onWheelMoves(IGui gui, double amount) {
-        if(hide)return;
+        if (hide) return;
         subParts.forEach(i -> i.onWheelMoves(gui, amount));
     }
 
     @Override
     public void onCharPress(IGui gui, int key) {
-        if(hide)return;
+        if (hide) return;
         subParts.forEach(i -> i.onCharPress(gui, key));
+    }
+
+    public boolean isHide() {
+        return hide;
+    }
+
+    public void setHide(boolean hide) {
+        this.hide = hide;
     }
 }

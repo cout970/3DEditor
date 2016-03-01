@@ -27,12 +27,12 @@ public abstract class AbstractStateButton extends AbstractButton {
         this.texture = texture;
     }
 
-    public AbstractStateButton(Vect2i pos, Vect2i size, ITexture texture, String text, String tooltip,  ButtonListener listener) {
+    public AbstractStateButton(Vect2i pos, Vect2i size, ITexture texture, String text, String tooltip, ButtonListener listener) {
         this(pos, size, texture, text, listener);
         this.tooltip = tooltip;
     }
 
-    public AbstractStateButton(Vect2i pos, Vect2i size, ITexture texture,  ButtonListener listener) {
+    public AbstractStateButton(Vect2i pos, Vect2i size, ITexture texture, ButtonListener listener) {
         this(pos, size, texture, null, listener);
     }
 
@@ -54,10 +54,10 @@ public abstract class AbstractStateButton extends AbstractButton {
 
     @Override
     public void onMouseClick(IGui gui, Vect2i mouse, InputHandler.MouseButton button) {
-       if (IGui.isInside(mouse, getPos(gui), size)) {
-           pressed = button != InputHandler.MouseButton.MIDDLE;
-           state = onButtonPress();
-       }
+        if (IGui.isInside(mouse, getPos(gui), size)) {
+            pressed = button != InputHandler.MouseButton.MIDDLE;
+            state = onButtonPress();
+        }
         super.onMouseClick(gui, mouse, button);
     }
 
@@ -86,7 +86,9 @@ public abstract class AbstractStateButton extends AbstractButton {
     protected abstract Vect2i getUVFromState(ButtonState state);
 
     protected abstract ButtonState onButtonPress();
+
     protected abstract ButtonState onButtonRelease();
+
     protected abstract ButtonState onButtonHovered(boolean hovered);
 
 

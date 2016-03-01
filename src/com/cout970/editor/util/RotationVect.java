@@ -29,11 +29,11 @@ public class RotationVect {
         this.yaw = yaw;
     }
 
-    public Vect2d toVect2d(){
+    public Vect2d toVect2d() {
         return new Vect2d(yaw, pitch);
     }
 
-    public void set(Vect2d rot){
+    public void set(Vect2d rot) {
         yaw = (float) rot.getX();
         pitch = (float) rot.getY();
     }

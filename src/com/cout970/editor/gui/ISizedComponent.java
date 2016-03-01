@@ -8,5 +8,6 @@ import com.cout970.editor.util.Vect2i;
 public interface ISizedComponent extends IGuiComponent {
 
     Vect2i getPos();
+
     Vect2i getSize();
 }

@@ -77,13 +77,13 @@ public class CubeEditWindow extends InternalWindow {
 
             if (ModelTree.INSTANCE.getSelectedModels().size() == 1 && cubeModel != ModelTree.INSTANCE.getSelectedModels().get(0)) {
                 loadModel(ModelTree.INSTANCE.getSelectedModels().get(0));
-            }else if(ModelTree.INSTANCE.getSelectedModels().size() != 1 || cubeModel != ModelTree.INSTANCE.getSelectedModels().get(0)){
+            } else if (ModelTree.INSTANCE.getSelectedModels().size() != 1 || cubeModel != ModelTree.INSTANCE.getSelectedModels().get(0)) {
                 cubeModel = null;
             }
 
-            if (cubeModel == null){
+            if (cubeModel == null) {
                 subParts.stream().filter(i -> i instanceof ILockable).map(i -> (ILockable) i).forEach(i -> i.setLocked(true));
-            }else{
+            } else {
                 subParts.stream().filter(i -> i instanceof ILockable).map(i -> (ILockable) i).forEach(i -> i.setLocked(false));
                 updateModel(cubeModel);
             }
@@ -128,9 +128,9 @@ public class CubeEditWindow extends InternalWindow {
             cubeName.setBuffer(m.getName());
             cubeName.resetChanges();
 
-            cubePosX.setValue(m.getPos().getX()/pixel);
-            cubePosY.setValue(m.getPos().getY()/pixel);
-            cubePosZ.setValue(m.getPos().getZ()/pixel);
+            cubePosX.setValue(m.getPos().getX() / pixel);
+            cubePosY.setValue(m.getPos().getY() / pixel);
+            cubePosZ.setValue(m.getPos().getZ() / pixel);
             cubePosX.resetChanges();
             cubePosY.resetChanges();
             cubePosZ.resetChanges();
@@ -149,9 +149,9 @@ public class CubeEditWindow extends InternalWindow {
             cubeRotationY.resetChanges();
             cubeRotationZ.resetChanges();
 
-            cubeRotPointX.setValue(m.getRotationPoint().getX()/pixel);
-            cubeRotPointY.setValue(m.getRotationPoint().getY()/pixel);
-            cubeRotPointZ.setValue(m.getRotationPoint().getZ()/pixel);
+            cubeRotPointX.setValue(m.getRotationPoint().getX() / pixel);
+            cubeRotPointY.setValue(m.getRotationPoint().getY() / pixel);
+            cubeRotPointZ.setValue(m.getRotationPoint().getZ() / pixel);
             cubeRotPointX.resetChanges();
             cubeRotPointY.resetChanges();
             cubeRotPointZ.resetChanges();
