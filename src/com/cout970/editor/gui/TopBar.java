@@ -1,7 +1,7 @@
 package com.cout970.editor.gui;
 
-import com.cout970.editor.GLFWDisplay;
-import com.cout970.editor.InputHandler;
+import com.cout970.editor.display.GLFWDisplay;
+import com.cout970.editor.display.InputHandler;
 import com.cout970.editor.ModelTree;
 import com.cout970.editor.gui.components.AbstractButton;
 import com.cout970.editor.gui.components.AbstractStateButton;

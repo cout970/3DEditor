@@ -1,9 +1,12 @@
 package com.cout970.editor.export;
 
+import com.cout970.editor.Editor;
 import com.cout970.editor.ModelTree;
 import com.cout970.editor.model.TechneCube;
 import com.cout970.editor.render.texture.TextureStorage;
+import com.cout970.editor.tools.Project;
 import com.cout970.editor.util.Log;
+import com.cout970.editor.util.Vect2d;
 import com.cout970.editor.util.Vect2i;
 import com.cout970.editor.util.Vect3d;
 import org.w3c.dom.*;
@@ -12,19 +15,14 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
-import java.util.zip.ZipInputStream;
+import java.util.zip.*;
 
 /**
  * Created by cout970 on 01/03/2016.
@@ -37,21 +35,18 @@ public class TechneSaveHandler implements ISaveHandler {
     );
 
     @Override
-    public void save(File file, ModelTree models) {
+    public void save(File file, Project project) {
         try {
-            save0(file, new LinkedList<>());
+            save0(file, project);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public ModelTree load(File file) {
+    public Project load(File file) {
         try {
-            List<TechneCube> parts = load0(file);
-            ModelTree m = new ModelTree(parts);
-            m.init();
-            return m;
+            return load0(file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return null;
@@ -59,68 +54,195 @@ public class TechneSaveHandler implements ISaveHandler {
 
     }
 
-    private void save0(File file, List<TechneCube> pars) throws FileNotFoundException {
-//        if (!file.exists())
-//            file.mkdirs();
-//        OutputStream stream = new FileOutputStream(file);
-//        ZipOutputStream zipOutput = new ZipOutputStream(stream);
+    private void save0(File file, Project project) throws FileNotFoundException {
+        OutputStream stream = new FileOutputStream(file);
+        ZipOutputStream zipOutput = new ZipOutputStream(stream);
         try {
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            Document document = documentBuilder.newDocument();
+            Document doc = documentBuilder.newDocument();
 
             //root
-            Element rootNode = document.createElement("Techne");
-            document.appendChild(rootNode);
+            Element rootNode = doc.createElement("Techne");
+            doc.appendChild(rootNode);
 
             //version
-            Attr version = document.createAttribute("Version");
+            Attr version = doc.createAttribute("Version");
             version.setValue("2.2");//current techne version
             rootNode.setAttributeNode(version);
 
             //autor
-            Element autorNode = document.createElement("Autor");
-            autorNode.setTextContent("cout970");
+            Element autorNode = doc.createElement("Author");
+            autorNode.setTextContent(project.getAutor() == null || project.getAutor().equals("") ? "ZeuX" : project.getAutor());
             rootNode.appendChild(autorNode);
 
+            //date
+            Element dateNode = doc.createElement("DateCreated");
+            dateNode.setTextContent(project.getDataCreation() == null ? "" : project.getDataCreation());
+            rootNode.appendChild(dateNode);
 
-//            Element nodeListModel = document.createElement("Model");
-//            document.appendChild(nodeListModel);
+            //description
+            Element descriptionNode = doc.createElement("Description");
+            rootNode.appendChild(descriptionNode);
 
-            Log.debug(document.toString());
+            //models
+            Element modelsNode = doc.createElement("Models");
+            {
+                Element modelNode = doc.createElement("Model");
+                //model
+                modelNode.setAttribute("texture", "none");
 
-//            ZipEntry entry = new ZipEntry("model.xml");
-//            zipOutput.putNextEntry(entry);
-//            XMLOutputFactory.newFactory().createXMLEventWriter(zipOutput).flush();
-//            zipOutput.closeEntry();
+                Element baseClassNode = doc.createElement("BaseClass");
+                baseClassNode.setTextContent("ModelBase");
+                modelNode.appendChild(baseClassNode);
 
-            TransformerFactory transformerFactory =
-                    TransformerFactory.newInstance();
-            Transformer transformer =
-                    transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(document);
-            StreamResult result =
-                    new StreamResult(new File("./test0.xml"));
+                Element geometryNode = doc.createElement("Geometry");
+                project.getModelTree().getAllModels().stream().filter(m -> m instanceof TechneCube).forEach(m -> {
+                    TechneCube cube = (TechneCube) m;
+                    Element shapeNode = doc.createElement("Shape");
+                    shapeNode.setAttribute("name", cube.getName());
+                    shapeNode.setAttribute("type", cubeTypes.get(0));
+                    {// Animation
+                        Element animationNode = doc.createElement("Animation");
+                        Element animationAnglesNode = doc.createElement("AnimationAngles");
+                        animationAnglesNode.setTextContent("0,0,0");
+                        animationNode.appendChild(animationAnglesNode);
+                        Element animationDurationNode = doc.createElement("AnimationDuration");
+                        animationDurationNode.setTextContent("0,0,0");
+                        animationNode.appendChild(animationDurationNode);
+                        Element animationTypeNode = doc.createElement("AnimationType");
+                        animationTypeNode.setTextContent("0,0,0");
+                        animationNode.appendChild(animationTypeNode);
+                        shapeNode.appendChild(animationNode);
+                    }
+                    //other
+                    Element isDecorativeNode = doc.createElement("IsDecorative");
+                    isDecorativeNode.setTextContent("False");
+                    shapeNode.appendChild(isDecorativeNode);
+                    Element isFixedNode = doc.createElement("IsFixed");
+                    isFixedNode.setTextContent("False");
+                    shapeNode.appendChild(isFixedNode);
+                    Element isMirroredNode = doc.createElement("IsMirrored");
+                    isMirroredNode.setTextContent(cube.isFlipped() ? "True" : "False");
+                    shapeNode.appendChild(isMirroredNode);
+
+                    //cube properties
+                    Vect3d size = cube.getSize();
+                    Vect3d position = cube.getRotationPoint().subtract(0.5, 1.5, 0.5).multiply(16);
+                    Vect3d position0 = new Vect3d(position.getX(), position.getY() - size.getY(), position.getZ());
+                    //-cubeSize.getY() - Float.parseFloat(position[1])
+                    //cubePosition.copy().add(cubeOffset).multiply(1 / 16d).add(0.5, 1.5, 0.5),
+                    Vect3d offset = cube.getPos().subtract(0.5, 1.5, 0.5).multiply(16).sub(position0);
+                    Vect3d rotation = cube.getRotation().toDegrees();
+                    Vect2d textureOffset = cube.getTextureOffset();
+
+                    Element offsetNode = doc.createElement("Offset");
+                    offsetNode.setTextContent(format(offset.getX()) + "," + format(-offset.getY()) + "," + format(offset.getZ()));
+                    shapeNode.appendChild(offsetNode);
+
+                    Element positionNode = doc.createElement("Position");
+                    positionNode.setTextContent(format(position.getX()) + "," + format(-position.getY()) + "," + format(position.getZ()));
+                    shapeNode.appendChild(positionNode);
+
+                    Element rotationNode = doc.createElement("Rotation");
+                    rotationNode.setTextContent(format(-rotation.getX()) + "," + format(rotation.getY()) + "," + format(-rotation.getZ()));
+                    shapeNode.appendChild(rotationNode);
+
+                    Element sizeNode = doc.createElement("Size");
+                    sizeNode.setTextContent(format(size.getX()) + "," + format(size.getY()) + "," + format(size.getZ()));
+                    shapeNode.appendChild(sizeNode);
+
+                    Element textureNode = doc.createElement("TextureOffset");
+                    textureNode.setTextContent(format(textureOffset.getX()) + "," + format(textureOffset.getY()));
+                    shapeNode.appendChild(textureNode);
+
+                    geometryNode.appendChild(shapeNode);
+                });
+                modelNode.appendChild(geometryNode);
+
+                Element scaleNode = doc.createElement("GlScale");
+                scaleNode.appendChild(doc.createTextNode("1,1,1"));
+                modelNode.appendChild(scaleNode);
+
+                Element nameNode = doc.createElement("Name");
+                nameNode.appendChild(doc.createTextNode(project.getName() == null ? "" : project.getName()));
+                modelNode.appendChild(nameNode);
+
+                Element textureSizeNode = doc.createElement("TextureSize");
+                textureSizeNode.appendChild(doc.createTextNode("16,16"));//TODO add several models with the different texture sizes
+                modelNode.appendChild(textureSizeNode);
+
+                modelsNode.appendChild(modelNode);
+            }
+            rootNode.appendChild(modelsNode);
+
+            //name
+            Element nameNode = doc.createElement("Name");
+            nameNode.setTextContent(project.getName() == null ? "" : project.getName());
+            rootNode.appendChild(nameNode);
+
+            //previewImage
+            Element prevImageNode = doc.createElement("PreviewImage");
+            prevImageNode.setTextContent(project.getPreviewImagePath() == null || project.getDataCreation().equals("") ? "" : project.getPreviewImagePath());
+            rootNode.appendChild(prevImageNode);
+
+            //projectName
+            Element projectNameNode = doc.createElement("ProjectName");
+            projectNameNode.setTextContent(project.getProjectName() == null ? "" : project.getProjectName());
+            rootNode.appendChild(projectNameNode);
+
+            //projectType
+            Element projectTypeNode = doc.createElement("ProjectType");
+            projectTypeNode.setTextContent(project.getProjectType() == null ? "Minecraft" : project.getProjectType());
+            rootNode.appendChild(projectTypeNode);
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            File temp = new File("temp.xml");
+            FileOutputStream out = new FileOutputStream(temp);
+            StreamResult result = new StreamResult(out);
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
             transformer.transform(source, result);
-            // Output to console for testing
-            StreamResult consoleResult =
-                    new StreamResult(System.out);
-            transformer.transform(source, consoleResult);
+            out.flush();
+            out.close();
 
+            FileInputStream fis = new FileInputStream(temp);
+            ZipEntry entry = new ZipEntry("model.xml");
+            zipOutput.putNextEntry(entry);
+            byte[] bytes = new byte[1024];
+            int length;
+            while ((length = fis.read(bytes)) >= 0) {
+                zipOutput.write(bytes, 0, length);
+            }
+            zipOutput.closeEntry();
+            temp.deleteOnExit();
+            zipOutput.close();
+            stream.close();
+            Thread.currentThread().sleep(1000);
         } catch (ParserConfigurationException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (XMLStreamException e) {
-//            e.printStackTrace();
+            e.printStackTrace();
         } catch (TransformerConfigurationException e) {
             e.printStackTrace();
         } catch (TransformerException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
-    private List<TechneCube> load0(File file) throws FileNotFoundException {
+    private static String format(double d) {
+        if (d == (long) d)
+            return String.format("%d", (long) d);
+        else
+            return String.format("%s", d);
+    }
+
+    private Project load0(File file) throws FileNotFoundException {
         if (!file.exists() || !file.getName().contains(".tcn")) {
             throw new FileNotFoundException("Error with file: " + file);
         }
@@ -130,9 +252,8 @@ public class TechneSaveHandler implements ISaveHandler {
             ZipInputStream zipInput = new ZipInputStream(stream);
             Map<String, byte[]> zipContents = new HashMap<>();
             ZipEntry entry;
-
             while ((entry = zipInput.getNextEntry()) != null) {
-
+                //TODO fix getSize() == -1
                 byte[] data = new byte[(int) entry.getSize()];
                 int i = 0;
                 while (zipInput.available() > 0 && i < data.length) {
@@ -150,9 +271,38 @@ public class TechneSaveHandler implements ISaveHandler {
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             Document document = documentBuilder.parse(new ByteArrayInputStream(modelXml));
 
+            //root
             NodeList nodeListTechne = document.getElementsByTagName("Techne");
             if (nodeListTechne.getLength() < 1) {
                 throw new ModelFormatException("Model " + file + " contains no Techne tag");
+            }
+
+            //autor
+            String autor = "";
+            NodeList nodeListAutor = document.getElementsByTagName("Autor");
+            if (nodeListAutor.getLength() > 0) {
+                autor = nodeListAutor.item(0).getNodeValue();
+            }
+
+            //creation date
+            String creationDate = "";
+            NodeList nodeListCreationDate = document.getElementsByTagName("DateCreated");
+            if (nodeListCreationDate.getLength() > 0) {
+                creationDate = nodeListCreationDate.item(0).getNodeValue();
+            }
+
+            //name
+            String projectName = "";
+            NodeList nodeListName = document.getElementsByTagName("Name");
+            if (nodeListName.getLength() > 0) {
+                projectName = nodeListName.item(0).getNodeValue();
+            }
+
+            //previewImagePath
+            String previewImagePath = "";
+            NodeList nodeListPreviewImagePath = document.getElementsByTagName("PreviewImage");
+            if (nodeListPreviewImagePath.getLength() > 0) {
+                previewImagePath = nodeListPreviewImagePath.item(0).getNodeValue();
             }
 
             NodeList nodeListModel = document.getElementsByTagName("Model");
@@ -279,6 +429,9 @@ public class TechneSaveHandler implements ISaveHandler {
                     e.printStackTrace();
                 }
             }
+            ModelTree m = new ModelTree(parts);
+            m.init();
+            return new Project(Editor.EDITOR_VERSION, autor, creationDate, projectName, projectName, previewImagePath, "Minecraft", m);
         } catch (ZipException e) {
             throw new ModelFormatException("Model " + file + " is not a valid zip file");
         } catch (IOException e) {
@@ -288,7 +441,6 @@ public class TechneSaveHandler implements ISaveHandler {
         } catch (SAXException e) {
             throw new ModelFormatException("Model " + file + " contains invalid XML", e);
         }
-
-        return parts;
+        return null;
     }
 }

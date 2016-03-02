@@ -1,6 +1,6 @@
 package com.cout970.editor.export;
 
-import com.cout970.editor.ModelTree;
+import com.cout970.editor.tools.Project;
 
 import java.io.File;
 
@@ -9,7 +9,7 @@ import java.io.File;
  */
 public interface ISaveHandler {
 
-    void save(File file, ModelTree models);
+    void save(File file, Project models);
 
-    ModelTree load(File file);
+    Project load(File file);
 }

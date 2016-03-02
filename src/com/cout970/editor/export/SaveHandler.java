@@ -1,6 +1,6 @@
 package com.cout970.editor.export;
 
-import com.cout970.editor.ModelTree;
+import com.cout970.editor.tools.Project;
 
 import java.io.File;
 
@@ -17,12 +17,12 @@ public class SaveHandler implements ISaveHandler {
     }
 
     @Override
-    public void save(File file, ModelTree models) {
+    public void save(File file, Project models) {
         techneSaveHandler.save(file, models);
     }
 
     @Override
-    public ModelTree load(File file) {
+    public Project load(File file) {
         return techneSaveHandler.load(file);
     }
 }

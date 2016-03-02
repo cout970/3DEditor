@@ -1,4 +1,4 @@
-package com.cout970.editor;
+package com.cout970.editor.display;
 
 import com.cout970.editor.util.Vect2d;
 import com.cout970.editor.util.Vect2i;

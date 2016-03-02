@@ -1,6 +1,6 @@
 package com.cout970.editor.gui.windows;
 
-import com.cout970.editor.InputHandler;
+import com.cout970.editor.display.InputHandler;
 import com.cout970.editor.gui.IGui;
 import com.cout970.editor.gui.IGuiComponent;
 import com.cout970.editor.gui.ISizedComponent;

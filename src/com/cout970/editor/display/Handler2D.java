@@ -1,5 +1,7 @@
-package com.cout970.editor;
+package com.cout970.editor.display;
 
+import com.cout970.editor.ConfigurationFile;
+import com.cout970.editor.ModelTree;
 import com.cout970.editor.gui.Gui;
 import com.cout970.editor.gui.TopBar;
 import com.cout970.editor.render.engine.IRenderEngine;

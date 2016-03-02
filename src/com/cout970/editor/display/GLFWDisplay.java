@@ -1,14 +1,12 @@
-package com.cout970.editor;
+package com.cout970.editor.display;
 
+import com.cout970.editor.Editor;
 import com.cout970.editor.render.texture.TextureStorage;
 import com.cout970.editor.util.LoopTimer;
 import com.cout970.editor.util.Vect2i;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
-import org.lwjgl.glfw.GLFWWindowSizeCallback;
-import org.lwjgl.glfw.GLFWvidmode;
+import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 
 import java.nio.ByteBuffer;
@@ -56,9 +54,7 @@ public class GLFWDisplay {
 
     public static void run() {
         try {
-            init();
             loop();
-
             glfwDestroyWindow(getWindow());
         } finally {
             glfwTerminate();
@@ -105,7 +101,7 @@ public class GLFWDisplay {
         glfwWindowHint(GLFW_DECORATED, GL_TRUE); // the window will have borders
 
         // Create the window
-        window = glfwCreateWindow(WIDTH, HEIGHT, Editor.EDITOR_NAME, NULL, NULL);
+        window = GLFW.glfwCreateWindow(WIDTH, HEIGHT, Editor.EDITOR_NAME, NULL, NULL);
         if (window == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
 

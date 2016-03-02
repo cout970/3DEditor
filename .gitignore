@@ -33,7 +33,7 @@ gradle.properties
 
 #runtime
 eclipse
-run
+run/**
 
 #mac
 .DS_Store

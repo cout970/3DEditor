@@ -67,4 +67,10 @@ public class ModelTree {
     public int getNumberOfModels() {
         return models.size();
     }
+
+    public List<IModel> getAllModels() {
+        List<IModel> list = new ArrayList<>(models.size());
+        list.addAll(models);
+        return list;
+    }
 }

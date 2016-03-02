@@ -1,8 +1,8 @@
 package com.cout970.editor.gui;
 
-import com.cout970.editor.GLFWDisplay;
-import com.cout970.editor.Handler2D;
-import com.cout970.editor.InputHandler;
+import com.cout970.editor.display.GLFWDisplay;
+import com.cout970.editor.display.Handler2D;
+import com.cout970.editor.display.InputHandler;
 import com.cout970.editor.gui.render.FontRenderer;
 import com.cout970.editor.gui.render.IFontRenderer;
 import com.cout970.editor.gui.render.IGuiRenderer;
