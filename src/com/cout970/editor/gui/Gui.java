@@ -38,10 +38,10 @@ public class Gui implements IGui, InputHandler.IKeyboardCallback, InputHandler.I
     public void render() {
         List<IGuiComponent> reverse = new LinkedList<>(components);
         reverse.sort((o1, o2) -> -compare(o1, o2));
-        for(IGuiComponent c : reverse){
+        for (IGuiComponent c : reverse) {
             c.renderBackground(this, InputHandler.getCursorPos().toVect2i(), 0);
         }
-        for(IGuiComponent c : reverse){
+        for (IGuiComponent c : reverse) {
             c.renderForeground(this, InputHandler.getCursorPos().toVect2i());
         }
     }

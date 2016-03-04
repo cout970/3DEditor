@@ -12,7 +12,7 @@ public interface ISizedComponent extends IGuiComponent {
 
     Vect2i getSize();
 
-    default boolean isMouseOnTop(IGui gui, Vect2i mouse, InputHandler.MouseButton button){
+    default boolean isMouseOnTop(IGui gui, Vect2i mouse, InputHandler.MouseButton button) {
         return IGui.isInside(mouse, getPos(), getSize());
     }
 }

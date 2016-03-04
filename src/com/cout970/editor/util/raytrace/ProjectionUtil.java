@@ -98,7 +98,7 @@ public class ProjectionUtil extends Util {
             swap = i;
             for (j = i + 1; j < 4; j++) {
                 /*
-				 * if (fabs(temp[j][i]) > fabs(temp[i][i])) { swap = j;
+                 * if (fabs(temp[j][i]) > fabs(temp[i][i])) { swap = j;
 				 */
                 if (Math.abs(temp.get(j * 4 + i)) > Math.abs(temp.get(i * 4 + i))) {
                     swap = j;

@@ -1,8 +1,8 @@
 package com.cout970.editor.gui;
 
+import com.cout970.editor.ModelTree;
 import com.cout970.editor.display.GLFWDisplay;
 import com.cout970.editor.display.InputHandler;
-import com.cout970.editor.ModelTree;
 import com.cout970.editor.gui.components.AbstractButton;
 import com.cout970.editor.gui.components.AbstractStateButton;
 import com.cout970.editor.gui.components.SimpleButton;
@@ -63,7 +63,7 @@ public class TopBar implements ISizedComponent {
     public boolean onPress(AbstractButton button, Vect2i mouse, InputHandler.MouseButton mouseButton) {
         if (button.getId() == 3) {
             ModelTree.INSTANCE.clearSelection();
-            IModel m = new TechneCube("Shape"+ModelTree.INSTANCE.getNumberOfModels(), new Vect3d(0, 0, 0), new Vect3d(1, 1, 1), TextureStorage.MODEL_TEXTURE, new Vect2d(0, 0), 16);
+            IModel m = new TechneCube("Shape" + ModelTree.INSTANCE.getNumberOfModels(), new Vect3d(0, 0, 0), new Vect3d(1, 1, 1), TextureStorage.MODEL_TEXTURE, new Vect2d(0, 0), 16);
             ModelTree.INSTANCE.addModel(m);
             ModelTree.INSTANCE.addModelToSelection(m);
         } else if (button.getId() == 6) {

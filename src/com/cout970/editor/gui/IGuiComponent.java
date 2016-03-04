@@ -26,7 +26,7 @@ public interface IGuiComponent {
 
     void setLevel(int level);
 
-    default boolean isMouseOnTop(IGui gui, Vect2i mouse, InputHandler.MouseButton button){
+    default boolean isMouseOnTop(IGui gui, Vect2i mouse, InputHandler.MouseButton button) {
         return false;
     }
 }

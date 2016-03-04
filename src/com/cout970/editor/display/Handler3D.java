@@ -62,7 +62,7 @@ public class Handler3D implements InputHandler.IMouseWheelCallback, InputHandler
         }
         drawDebugLines();
         ModelTree tree = ModelTree.INSTANCE;
-        for(IModel m : tree.getModelsToRender()){
+        for (IModel m : tree.getModelsToRender()) {
             m.render(tree.getSelectedModels().contains(m));
         }
         if (ModelTree.INSTANCE.getSelectedModels().size() == 1) {
