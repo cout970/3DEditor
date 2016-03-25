@@ -41,7 +41,7 @@ public abstract class AbstractButton implements IGuiComponent {
     }
 
     protected Vect2i getPos(IGui gui) {
-        return pos.copy().add(gui.getGuiStartingPoint());
+        return pos.copy();
     }
 
     protected abstract void renderButton(IGui gui, IGuiRenderer guiRenderer, Vect2i mouse);

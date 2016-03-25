@@ -3,7 +3,6 @@ package com.cout970.editor.export;
 import com.cout970.editor.Editor;
 import com.cout970.editor.ModelTree;
 import com.cout970.editor.model.TechneCube;
-import com.cout970.editor.render.texture.TextureStorage;
 import com.cout970.editor.tools.Project;
 import com.cout970.editor.util.Log;
 import com.cout970.editor.util.Vect2d;
@@ -419,7 +418,7 @@ public class TechneSaveHandler implements ISaveHandler {
 
                     TechneCube cube = new TechneCube(shapeName,
                             cubePosition.copy().add(cubeOffset).multiply(1 / 16d).add(0.5, 1.5, 0.5),
-                            cubeSize, TextureStorage.MODEL_TEXTURE, cubeTextureOffset.toVect2d(),
+                            cubeSize, cubeTextureOffset.toVect2d(),
                             (int) Math.max(textureDims != null ? textureDims.getWidth() : 32, textureDims != null ? textureDims.getHeight() : 32));
 
                     cube.setRotation(cubeRotation);
@@ -434,7 +433,6 @@ public class TechneSaveHandler implements ISaveHandler {
                 }
             }
             ModelTree m = new ModelTree(parts);
-            m.init();
             return new Project(Editor.EDITOR_VERSION, autor, creationDate, projectName, projectName, previewImagePath, "Minecraft", m);
         } catch (ZipException e) {
             throw new ModelFormatException("Model " + file + " is not a valid zip file");

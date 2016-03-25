@@ -5,11 +5,11 @@ import com.cout970.editor.display.InputHandler;
 import com.cout970.editor.gui.components.AbstractButton;
 import com.cout970.editor.gui.components.AbstractStateButton;
 import com.cout970.editor.gui.components.SimpleButton;
-import com.cout970.editor.render.IGuiRenderer;
 import com.cout970.editor.gui.windows.CubeEditWindow;
 import com.cout970.editor.gui.windows.GroupEditWindow;
 import com.cout970.editor.gui.windows.ModelTreeWindow;
 import com.cout970.editor.gui.windows.TextureEditorWindow;
+import com.cout970.editor.render.IGuiRenderer;
 import com.cout970.editor.render.texture.TextureStorage;
 import com.cout970.editor.util.Color;
 import com.cout970.editor.util.Vect2i;
@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class TopBar implements ISizedComponent {
 
-    public static final int BAR_HEIGHT = 25;
+    public static final int BAR_HEIGHT = 34;
     private List<AbstractButton> buttons = new ArrayList<>();
     private CubeEditWindow cubeEditor;
     private ModelTreeWindow modelTree;
@@ -43,17 +43,21 @@ public class TopBar implements ISizedComponent {
     public void init(IGui gui) {
         int size = BAR_HEIGHT - 2;
         //new
-        buttons.add(new SimpleButton(Vect2i.nullVector(), new Vect2i(80, size), TextureStorage.BUTTONS, "New", this::onPress, this::uvMapFile).setId(0));
+        buttons.add(new SimpleButton(Vect2i.nullVector(), new Vect2i(size, size), TextureStorage.BUTTONS, null, "New", this::onPress, this::uvMapNewFile).setId(0));
         //load
-        buttons.add(new SimpleButton(new Vect2i(80, 0), new Vect2i(80, size), TextureStorage.BUTTONS, "Load", this::onPress, this::uvMapFile).setId(1));
+        buttons.add(new SimpleButton(new Vect2i(32, 0), new Vect2i(size, size), TextureStorage.BUTTONS, null, "Load", this::onPress, this::uvMapLoadProject).setId(1));
         //save
-        buttons.add(new SimpleButton(new Vect2i(80 * 2, 0), new Vect2i(80, size), TextureStorage.BUTTONS, "Save", this::onPress, this::uvMapFile).setId(2));
+        buttons.add(new SimpleButton(new Vect2i(32 * 2, 0), new Vect2i(size, size), TextureStorage.BUTTONS, null, "Save", this::onPress, this::uvMapSaveProject).setId(2));
+        //save as
+        buttons.add(new SimpleButton(new Vect2i(32 * 3, 0), new Vect2i(size, size), TextureStorage.BUTTONS, null, "Save as", this::onPress, this::uvMapSaveProjectAs).setId(3));
+        //load texture
+        buttons.add(new SimpleButton(new Vect2i(32 * 4, 0), new Vect2i(size, size), TextureStorage.BUTTONS, null, "Load Texture", this::onPress, this::uvMapLoadTexture).setId(4));
         //add cube
-        buttons.add(new SimpleButton(new Vect2i(80 * 3, 0), new Vect2i(size, size), TextureStorage.BUTTONS, this::onPress, this::uvMapAddCube).setId(3));
+        buttons.add(new SimpleButton(new Vect2i(32 * 5, 0), new Vect2i(size, size), TextureStorage.BUTTONS, null, "Add cube", this::onPress, this::uvMapAddCube).setId(5));
         //TODO
-        buttons.add(new SimpleButton(new Vect2i(80 * 3 + size * 1, 0), new Vect2i(size, size), TextureStorage.BUTTONS, this::onPress, this::uvMapAddTriangle).setId(4));//triangle
-        buttons.add(new SimpleButton(new Vect2i(80 * 3 + size * 2, 0), new Vect2i(size, size), TextureStorage.BUTTONS, this::onPress, this::uvMapAddQuad).setId(5));//quad
-        buttons.add(new SimpleButton(new Vect2i(80 * 3 + size * 3, 0), new Vect2i(size, size), TextureStorage.BUTTONS, this::onPress, this::uvMapCubeEditor).setId(6));//cube editor
+//        buttons.add(new SimpleButton(new Vect2i(80 * 3 + size * 1, 0), new Vect2i(size, size), TextureStorage.BUTTONS, this::onPress, this::uvMapAddTriangle).setId(4));//triangle
+//        buttons.add(new SimpleButton(new Vect2i(80 * 3 + size * 2, 0), new Vect2i(size, size), TextureStorage.BUTTONS, this::onPress, this::uvMapAddQuad).setId(5));//quad
+//        buttons.add(new SimpleButton(new Vect2i(80 * 3 + size * 3, 0), new Vect2i(size, size), TextureStorage.BUTTONS, this::onPress, this::uvMapCubeEditor).setId(6));//cube editor
         cubeEditor = new CubeEditWindow(gui);
         modelTree = new ModelTreeWindow(gui);
         textureEditor = new TextureEditorWindow(gui);
@@ -61,13 +65,17 @@ public class TopBar implements ISizedComponent {
     }
 
     public boolean onPress(AbstractButton button, Vect2i mouse, InputHandler.MouseButton mouseButton) {
-        if (button.getId() == 0){//new project
+        if (button.getId() == 0) {//new project
             GuiController.INSTANCE.buttonNewProject();
-        }else if(button.getId() == 1) {
+        } else if (button.getId() == 1) {//load
             GuiController.INSTANCE.buttonLoadProject();
-        }else if(button.getId() == 2){
+        } else if (button.getId() == 2) {//save
             GuiController.INSTANCE.buttonSaveProject();
-        }else if (button.getId() == 3) {
+        } else if (button.getId() == 3) {//save as
+            GuiController.INSTANCE.buttonSaveAsProject();
+        } else if (button.getId() == 4) {//load texture
+            GuiController.INSTANCE.buttonLoadTexture();
+        } else if (button.getId() == 5) {//add cube
             GuiController.INSTANCE.buttonAddCube();
         } else if (button.getId() == 6) {
             cubeEditor.setHide(!cubeEditor.isHide());
@@ -75,38 +83,45 @@ public class TopBar implements ISizedComponent {
         return false;
     }
 
-    public Vect2i uvMapFile(AbstractStateButton.ButtonState state) {
-        if (state == AbstractStateButton.ButtonState.NORMAL) return new Vect2i(16, 0);
-        if (state == AbstractStateButton.ButtonState.HOVER) return new Vect2i(16, BAR_HEIGHT - 2);
-        if (state == AbstractStateButton.ButtonState.DOWN) return new Vect2i(16, (BAR_HEIGHT - 2) * 2);
+    public Vect2i uvMapNewFile(AbstractStateButton.ButtonState state) {
+        if (state == AbstractStateButton.ButtonState.NORMAL) { return new Vect2i(0, 69); }
+        if (state == AbstractStateButton.ButtonState.HOVER) { return new Vect2i(32, 69); }
+        if (state == AbstractStateButton.ButtonState.DOWN) { return new Vect2i(64, 69); }
+        return Vect2i.nullVector();
+    }
+
+    public Vect2i uvMapLoadProject(AbstractStateButton.ButtonState state) {
+        if (state == AbstractStateButton.ButtonState.NORMAL) { return new Vect2i(0, 69 + 32); }
+        if (state == AbstractStateButton.ButtonState.HOVER) { return new Vect2i(32, 69 + 32); }
+        if (state == AbstractStateButton.ButtonState.DOWN) { return new Vect2i(64, 69 + 32); }
+        return Vect2i.nullVector();
+    }
+
+    public Vect2i uvMapSaveProject(AbstractStateButton.ButtonState state) {
+        if (state == AbstractStateButton.ButtonState.NORMAL) { return new Vect2i(0, 69 + 32 * 2); }
+        if (state == AbstractStateButton.ButtonState.HOVER) { return new Vect2i(32, 69 + 32 * 2); }
+        if (state == AbstractStateButton.ButtonState.DOWN) { return new Vect2i(64, 69 + 32 * 2); }
+        return Vect2i.nullVector();
+    }
+
+    public Vect2i uvMapSaveProjectAs(AbstractStateButton.ButtonState state) {
+        if (state == AbstractStateButton.ButtonState.NORMAL) { return new Vect2i(0, 69 + 32 * 3); }
+        if (state == AbstractStateButton.ButtonState.HOVER) { return new Vect2i(32, 69 + 32 * 3); }
+        if (state == AbstractStateButton.ButtonState.DOWN) { return new Vect2i(64, 69 + 32 * 3); }
+        return Vect2i.nullVector();
+    }
+
+    public Vect2i uvMapLoadTexture(AbstractStateButton.ButtonState state) {
+        if (state == AbstractStateButton.ButtonState.NORMAL) { return new Vect2i(0, 69 + 32 * 4); }
+        if (state == AbstractStateButton.ButtonState.HOVER) { return new Vect2i(32, 69 + 32 * 4); }
+        if (state == AbstractStateButton.ButtonState.DOWN) { return new Vect2i(64, 69 + 32 * 4); }
         return Vect2i.nullVector();
     }
 
     public Vect2i uvMapAddCube(AbstractStateButton.ButtonState state) {
-        if (state == AbstractStateButton.ButtonState.NORMAL) return new Vect2i(16, 69);
-        if (state == AbstractStateButton.ButtonState.HOVER) return new Vect2i(16, 69 + BAR_HEIGHT - 2);
-        if (state == AbstractStateButton.ButtonState.DOWN) return new Vect2i(16, 69 + (BAR_HEIGHT - 2) * 2);
-        return Vect2i.nullVector();
-    }
-
-    public Vect2i uvMapAddTriangle(AbstractStateButton.ButtonState state) {
-        if (state == AbstractStateButton.ButtonState.NORMAL) return new Vect2i(38, 69);
-        if (state == AbstractStateButton.ButtonState.HOVER) return new Vect2i(38, 69 + BAR_HEIGHT - 2);
-        if (state == AbstractStateButton.ButtonState.DOWN) return new Vect2i(38, 69 + (BAR_HEIGHT - 2) * 2);
-        return Vect2i.nullVector();
-    }
-
-    public Vect2i uvMapAddQuad(AbstractStateButton.ButtonState state) {
-        if (state == AbstractStateButton.ButtonState.NORMAL) return new Vect2i(60, 69);
-        if (state == AbstractStateButton.ButtonState.HOVER) return new Vect2i(60, 69 + BAR_HEIGHT - 2);
-        if (state == AbstractStateButton.ButtonState.DOWN) return new Vect2i(60, 69 + (BAR_HEIGHT - 2) * 2);
-        return Vect2i.nullVector();
-    }
-
-    public Vect2i uvMapCubeEditor(AbstractStateButton.ButtonState state) {
-        if (state == AbstractStateButton.ButtonState.NORMAL) return new Vect2i(82, 69);
-        if (state == AbstractStateButton.ButtonState.HOVER) return new Vect2i(82, 69 + BAR_HEIGHT - 2);
-        if (state == AbstractStateButton.ButtonState.DOWN) return new Vect2i(82, 69 + (BAR_HEIGHT - 2) * 2);
+        if (state == AbstractStateButton.ButtonState.NORMAL) { return new Vect2i(96, 69); }
+        if (state == AbstractStateButton.ButtonState.HOVER) { return new Vect2i(96 + 32, 69); }
+        if (state == AbstractStateButton.ButtonState.DOWN) { return new Vect2i(96 + 64, 69); }
         return Vect2i.nullVector();
     }
 

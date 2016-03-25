@@ -116,7 +116,7 @@ public class Gui implements IGui, InputHandler.IKeyboardCallback, InputHandler.I
 
     @Override
     public Vect2i getGuiStartingPoint() {
-        return Vect2i.nullVector();
+        return new Vect2i(0, TopBar.BAR_HEIGHT);
     }
 
     @Override

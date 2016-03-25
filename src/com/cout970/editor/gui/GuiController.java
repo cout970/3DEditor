@@ -44,8 +44,20 @@ public class GuiController {
 
     public void buttonAddCube() {
         Editor.getProject().getModelTree().clearSelection();
-        IModel m = new TechneCube("Shape" + Editor.getProject().getModelTree().getNumberOfModels(), new Vect3d(0, 0, 0), new Vect3d(1, 1, 1), TextureStorage.MODEL_TEXTURE, new Vect2d(0, 0), 16);
+        IModel m = new TechneCube("Shape" + Editor.getProject().getModelTree().getNumberOfModels(), new Vect3d(0, 0, 0), new Vect3d(1, 1, 1), new Vect2d(0, 0), 16);
         Editor.getProject().getModelTree().addModel(m);
         Editor.getProject().getModelTree().addModelToSelection(m);
+    }
+
+    public void buttonSaveAsProject() {
+
+    }
+
+    public void buttonLoadTexture() {
+        File texture = WindowPopupHandler.INSTANCE.showLoadTexturePopup();
+        if (texture != null){
+            TextureStorage.loadModelTexture(texture);
+
+        }
     }
 }

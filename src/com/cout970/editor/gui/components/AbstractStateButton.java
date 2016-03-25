@@ -68,7 +68,7 @@ public abstract class AbstractStateButton extends AbstractButton {
         if (IGui.isInside(mouse, getPos(gui), size)) {
             List<String> toolTip = getButtonTooltip(gui, mouse);
             if (!toolTip.isEmpty()) {
-                gui.getGuiRenderer().drawHoveringText(toolTip, mouse.sub(gui.getGuiStartingPoint()));
+                gui.getGuiRenderer().drawHoveringText(toolTip, mouse);
             }
         }
     }

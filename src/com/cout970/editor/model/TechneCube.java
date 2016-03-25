@@ -1,7 +1,6 @@
 package com.cout970.editor.model;
 
 import com.cout970.editor.render.examples.Lines;
-import com.cout970.editor.render.texture.ITexture;
 import com.cout970.editor.render.texture.TextureStorage;
 import com.cout970.editor.util.Direction;
 import com.cout970.editor.util.Vect2d;
@@ -28,7 +27,6 @@ public class TechneCube implements IModel {
     protected String name;
     protected Vect3d cubePos;
     protected Vect3d cubeSize;
-    protected ITexture texture;
     protected Vect2d textureOffset;
     protected int textureSize;
     protected boolean flipped;
@@ -37,11 +35,10 @@ public class TechneCube implements IModel {
     private boolean visible = true;
 
 
-    public TechneCube(String name, Vect3d cubePos, Vect3d cubeSize, ITexture texture, Vect2d textureOffset, int textureSize) {
+    public TechneCube(String name, Vect3d cubePos, Vect3d cubeSize, Vect2d textureOffset, int textureSize) {
         this.cubePos = cubePos;
         this.name = name;
         this.cubeSize = cubeSize;
-        this.texture = texture;
         this.textureOffset = textureOffset;
         this.textureSize = textureSize;
         this.rotationPoint = Vect3d.nullVector();
@@ -65,12 +62,8 @@ public class TechneCube implements IModel {
         return cubeSize.copy();
     }
 
-    public ITexture getTexture() {
-        return texture;
-    }
-
     public Vect2d getTextureOffset() {
-        return textureOffset;
+        return textureOffset.copy();
     }
 
     public int getTextureSize() {
@@ -101,11 +94,6 @@ public class TechneCube implements IModel {
     public void setSize(Vect3d cubeSize) {
         resetRenderList();
         this.cubeSize = cubeSize;
-    }
-
-    public void setTexture(ITexture texture) {
-        resetRenderList();
-        this.texture = texture;
     }
 
     public void setTextureOffset(Vect2d textureOffset) {
@@ -156,8 +144,9 @@ public class TechneCube implements IModel {
             Lines.cubeSelection(getSize().multiply(0.0625));
             glEndList();
         }
-        texture.bind();
+        TextureStorage.MODEL_TEXTURE.bind();
         glCallList(renderList);
+
         if (selected) {
             TextureStorage.EMPTY.bind();
             glPushMatrix();
@@ -233,37 +222,37 @@ public class TechneCube implements IModel {
                 offsetX + length + width,
                 offsetY + length,
                 offsetX + length + width + length,
-                offsetY + length + height, texture);
+                offsetY + length + height);
 
         quadList[1] = new Quad(Direction.EAST, new Vertex[]{vertex1.copy(), vertex5.copy(), vertex8.copy(), vertex4.copy()},
                 offsetX,
                 offsetY + length,
                 offsetX + length,
-                offsetY + length + height, texture);
+                offsetY + length + height);
 
         quadList[2] = new Quad(Direction.DOWN, new Vertex[]{vertex6.copy(), vertex5.copy(), vertex1.copy(), vertex2.copy()},
                 offsetX + length,
                 offsetY,
                 offsetX + length + width,
-                offsetY + length, texture);
+                offsetY + length);
 
         quadList[3] = new Quad(Direction.UP, new Vertex[]{vertex3.copy(), vertex4.copy(), vertex8.copy(), vertex7.copy()},
                 offsetX + length + width,
                 offsetY + length,
                 offsetX + length + width + width,
-                offsetY, texture);
+                offsetY);
 
         quadList[4] = new Quad(Direction.NORTH, new Vertex[]{vertex2.copy(), vertex1.copy(), vertex4.copy(), vertex3.copy()},
                 offsetX + length,
                 offsetY + length,
                 offsetX + length + width,
-                offsetY + length + height, texture);
+                offsetY + length + height);
 
         quadList[5] = new Quad(Direction.SOUTH, new Vertex[]{vertex5.copy(), vertex6.copy(), vertex7.copy(), vertex8.copy()},
                 offsetX + length + width + length,
                 offsetY + length,
                 offsetX + length + width + length + width,
-                offsetY + length + height, texture);
+                offsetY + length + height);
 
         if (flipped) {
             for (Quad aQuadList : quadList) {
@@ -297,7 +286,6 @@ public class TechneCube implements IModel {
                 "name='" + name + '\'' +
                 ", cubePos=" + cubePos +
                 ", cubeSize=" + cubeSize +
-                ", texture=" + texture +
                 ", textureOffset=" + textureOffset +
                 ", textureSize=" + textureSize +
                 ", rotation=" + rotation +
@@ -350,13 +338,11 @@ public class TechneCube implements IModel {
 
         protected static final float EPSILON = 0.0f / 1F;
         protected Vertex[] vertex;
-        protected ITexture texture;
         protected Direction normal;
 
-        public Quad(Direction normal, Vertex[] vertices, double u, double v, double u2, double v2, ITexture texture) {
+        public Quad(Direction normal, Vertex[] vertices, double u, double v, double u2, double v2) {
             vertex = vertices;
             this.normal = normal;
-            this.texture = texture;
             vertices[0].setUV(u2 - EPSILON, v + EPSILON);
             vertices[1].setUV(u + EPSILON, v + EPSILON);
             vertices[2].setUV(u + EPSILON, v2 - EPSILON);
@@ -387,7 +373,6 @@ public class TechneCube implements IModel {
         public String toString() {
             return "Quad{" +
                     "vertex=" + Arrays.toString(vertex) +
-                    ", texture=" + texture +
                     '}';
         }
     }

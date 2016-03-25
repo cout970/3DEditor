@@ -34,4 +34,10 @@ public interface IGuiRenderer {
     void drawRectangleWithCustomSizedTexture(Vect2i pos, Vect2i size, Vect2d textureUV, Vect2d textureSize);
 
     void drawScaledCustomSizeRectangle(Vect2i pos, Vect2i size, Vect2d textureUV, Vect2i textureSize, Vect2d tileSize);
+
+    void drawRectangleWithTextureUV(Vect2i pos, Vect2i size, Vect2d first, Vect2d end);
+
+    void enableBlend();
+
+    void disableBlend();
 }

@@ -34,6 +34,7 @@ public class Lines {
 
         Vect3d[][] quads = {down, up, north, south, west, east};
 
+        glColor4f(1, 1, 0, 1);
         for (Vect3d[] quad : quads) {
             for (int i = 0; i < 4; i++) {
                 line(quad[i], quad[(i + 1) % 4]);

@@ -83,6 +83,5 @@ public class Project {
         if (models == null){
             models = new ModelTree();
         }
-        models.init();
     }
 }

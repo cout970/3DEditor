@@ -88,25 +88,25 @@ public class TextureManager implements ITextureLoader {
         IntBuffer hBuf = BufferUtils.createIntBuffer(1);
         IntBuffer comp = BufferUtils.createIntBuffer(1);
 
-        if (stbi_info_from_memory(imageBuffer, wBuf, hBuf, comp) == 0)
+        if (stbi_info_from_memory(imageBuffer, wBuf, hBuf, comp) == 0) {
             throw new RuntimeException("Failed to read image information: " + stbi_failure_reason());
+        }
 
         w = wBuf.get(0);
         h = hBuf.get(0);
 
         // Decode the image
         image = stbi_load_from_memory(imageBuffer, wBuf, hBuf, comp, 0);
-        if (image == null)
-            throw new RuntimeException("Failed to load image: " + stbi_failure_reason());
+        if (image == null) { throw new RuntimeException("Failed to load image: " + stbi_failure_reason()); }
 
         int texID = glGenTextures();
 
         texture = new TextureGL(texID, textureName, w, h);
 
         glBindTexture(GL_TEXTURE_2D, texID);
-        if (comp.get(0) == 3)
+        if (comp.get(0) == 3) {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-        else {
+        } else {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -176,16 +176,16 @@ public class TextureManager implements ITextureLoader {
                 IntBuffer wBuf = BufferUtils.createIntBuffer(1);
                 IntBuffer hBuf = BufferUtils.createIntBuffer(1);
                 IntBuffer comp = BufferUtils.createIntBuffer(1);
-                if (stbi_info_from_memory(imageBuffer, wBuf, hBuf, comp) == 0)
+                if (stbi_info_from_memory(imageBuffer, wBuf, hBuf, comp) == 0) {
                     throw new RuntimeException("Failed to read image information: " + stbi_failure_reason());
+                }
 
                 w = wBuf.get(0);
                 h = hBuf.get(0);
 
                 // Decode the image
                 image = stbi_load_from_memory(imageBuffer, wBuf, hBuf, comp, 4);
-                if (image == null)
-                    throw new RuntimeException("Failed to load image: " + stbi_failure_reason());
+                if (image == null) { throw new RuntimeException("Failed to load image: " + stbi_failure_reason()); }
 
                 SpriteTextureBuffer sprite = new SpriteTextureBuffer(image, w, h, comp.get(0) == 4,
                         res.getFileName());
@@ -257,8 +257,10 @@ public class TextureManager implements ITextureLoader {
             FileChannel fc = fis.getChannel();
 
             buffer = createByteBuffer((int) fc.size() + 1);
-
-            while (fc.read(buffer) != -1) ;
+            int i;
+            do {
+                i = fc.read(buffer);
+            } while (i != -1);
 
             fis.close();
             fc.close();
@@ -266,18 +268,17 @@ public class TextureManager implements ITextureLoader {
             buffer = createByteBuffer(bufferSize);
 
             InputStream source = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource.getCompletePath());
-            if (source == null)
+            if (source == null) {
                 throw new FileNotFoundException(resource.getCompletePath() + ", " + resource.getFile().getAbsolutePath());
+            }
 
             try {
                 ReadableByteChannel rbc = Channels.newChannel(source);
                 try {
                     while (true) {
                         int bytes = rbc.read(buffer);
-                        if (bytes == -1)
-                            break;
-                        if (buffer.remaining() == 0)
-                            buffer = resizeBuffer(buffer, buffer.capacity() * 2);
+                        if (bytes == -1) { break; }
+                        if (buffer.remaining() == 0) { buffer = resizeBuffer(buffer, buffer.capacity() * 2); }
                     }
                 } finally {
                     rbc.close();

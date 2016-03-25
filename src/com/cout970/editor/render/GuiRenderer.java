@@ -48,7 +48,7 @@ public class GuiRenderer implements IGuiRenderer {
 
     @Override
     public void drawRectangle(Vect2i start, Vect2i end, Color x) {
-        
+
         TextureStorage.EMPTY.bind();
         glBegin(GL_QUADS);
         x.glColor();
@@ -61,7 +61,7 @@ public class GuiRenderer implements IGuiRenderer {
 
     @Override
     public void drawGradientRectangle(Vect2i start, Vect2i end, Color startColor, Color endColor) {
-        
+
         TextureStorage.EMPTY.bind();
         glBegin(GL_QUADS);
         startColor.glColor();
@@ -89,7 +89,7 @@ public class GuiRenderer implements IGuiRenderer {
         float f = 0.00390625F;
         float f1 = 0.00390625F;
         int zLevel = 0;
-        
+
         glBegin(GL_QUADS);
         glTexCoord2d(((texturePos.getX()) * f), (double) ((texturePos.getY() + size.getY()) * f1));
         glVertex3d((pos.getX()), (pos.getY() + size.getY()), zLevel);
@@ -109,7 +109,7 @@ public class GuiRenderer implements IGuiRenderer {
     public void drawRectangleWithCustomSizedTexture(Vect2i pos, Vect2i size, Vect2d textureUV, Vect2d textureSize) {
         float f = (float) (1.0F / textureSize.getX());
         float f1 = (float) (1.0F / textureSize.getY());
-        
+
         glBegin(GL_QUADS);
         glTexCoord2d((textureUV.getX() * f), ((textureUV.getY() + size.getY()) * f1));
         glVertex3d(pos.getX(), pos.getY() + size.getY(), 0.0D);
@@ -128,5 +128,35 @@ public class GuiRenderer implements IGuiRenderer {
     @Override
     public void drawScaledCustomSizeRectangle(Vect2i pos, Vect2i size, Vect2d textureUV, Vect2i textureSize, Vect2d tileSize) {
 
+    }
+
+    @Override
+    public void drawRectangleWithTextureUV(Vect2i pos, Vect2i size, Vect2d first, Vect2d end) {
+        glBegin(GL_QUADS);
+
+        glTexCoord2d(first.getX(), end.getY());
+        glVertex3d(pos.getX(), pos.getY() + size.getY(), 0.0D);
+
+        glTexCoord2d(end.getX(), end.getY());
+        glVertex3d(pos.getX() + size.getX(), pos.getY() + size.getY(), 0.0D);
+
+        glTexCoord2d(end.getX(), first.getY());
+        glVertex3d(pos.getX() + size.getX(), pos.getY(), 0.0D);
+
+        glTexCoord2d(first.getX(), first.getY());
+        glVertex3d(pos.getX(), pos.getY(), 0.0D);
+
+        glEnd();
+    }
+
+    @Override
+    public void enableBlend() {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    @Override
+    public void disableBlend() {
+        glDisable(GL_BLEND);
     }
 }

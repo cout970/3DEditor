@@ -5,6 +5,7 @@ import com.cout970.editor.Editor;
 import com.cout970.editor.ModelTree;
 import com.cout970.editor.model.IModel;
 import com.cout970.editor.model.TechneCube;
+import com.cout970.editor.render.examples.Cube;
 import com.cout970.editor.render.examples.Lines;
 import com.cout970.editor.render.examples.Planes;
 import com.cout970.editor.render.examples.Sphere;
@@ -37,8 +38,11 @@ public class EditorHandler implements InputHandler.IMouseWheelCallback, InputHan
     private RotationVect cameraRotation = new RotationVect(30, -45);
     private Vect3d cameraTranslation = new Vect3d(-1, -1, -2);
     private static Sphere sphere;
+    private Cube baseBlock;
 
-    public EditorHandler() {}
+    public EditorHandler() {
+        baseBlock = new Cube(new Vect3d(-1, -1, -1), Vect3d.nullVector());
+    }
 
     public void update() {
         setCamera();
@@ -55,6 +59,10 @@ public class EditorHandler implements InputHandler.IMouseWheelCallback, InputHan
         }
         Lines.drawDebugLines();
 
+        TextureStorage.CUBE.bind();
+        glColor4f(1, 1, 1, 1);
+        baseBlock.render();
+
         ModelTree tree = Editor.getProject().getModelTree();
         for (IModel m : tree.getModelsToRender()) {
             m.render(tree.getSelectedModels().contains(m));
@@ -66,7 +74,7 @@ public class EditorHandler implements InputHandler.IMouseWheelCallback, InputHan
                 Vect3d v = ((TechneCube) m).getRotationPoint();
                 glTranslated(v.getX(), v.getY(), v.getZ());
                 TextureStorage.EMPTY.bind();
-                glColor4f(0,0,1,1);
+                glColor4f(0, 0, 1, 1);
                 sphere.render();
                 glPopMatrix();
             }

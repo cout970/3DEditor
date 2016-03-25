@@ -1,5 +1,6 @@
 package com.cout970.editor.render.examples;
 
+import com.cout970.editor.util.Vect2d;
 import com.cout970.editor.util.Vect3d;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -49,24 +50,48 @@ public class Cube {
         Vect3d[] south = {vertex5.copy(), vertex6.copy(), vertex7.copy(), vertex8.copy()};
         Vect3d[] west = {vertex6.copy(), vertex2.copy(), vertex3.copy(), vertex7.copy()};
         Vect3d[] east = {vertex1.copy(), vertex5.copy(), vertex8.copy(), vertex4.copy()};
+        Vect2d[] uv = {new Vect2d(0, 0), new Vect2d(1, 0), new Vect2d(1, 1), new Vect2d(0, 1)};
 
+        int count = 0;
         glBegin(GL_QUADS);
-        glColor4f(1f, 1f, 0f, 1f);
         //y
-        for (Vect3d v : down)
+        for (Vect3d v : down) {
+            glTexCoord2d(uv[count].getX(), uv[count].getY());
+            count++;
             glVertex3d(v.getX(), v.getY(), v.getZ());
-        for (Vect3d v : up)
+        }
+        count = 0;
+        for (Vect3d v : up) {
+            glTexCoord2d(uv[count].getX(), uv[count].getY());
+            count++;
             glVertex3d(v.getX(), v.getY(), v.getZ());
+        }
+        count = 0;
         //z
-        for (Vect3d v : north)
+        for (Vect3d v : north) {
+            glTexCoord2d(uv[count].getX(), uv[count].getY());
+            count++;
             glVertex3d(v.getX(), v.getY(), v.getZ());
-        for (Vect3d v : south)
+        }
+        count = 0;
+        for (Vect3d v : south) {
+            glTexCoord2d(uv[count].getX(), uv[count].getY());
+            count++;
             glVertex3d(v.getX(), v.getY(), v.getZ());
+        }
+        count = 0;
         //x
-        for (Vect3d v : west)
+        for (Vect3d v : west) {
+            glTexCoord2d(uv[count].getX(), uv[count].getY());
+            count++;
             glVertex3d(v.getX(), v.getY(), v.getZ());
-        for (Vect3d v : east)
+        }
+        count = 0;
+        for (Vect3d v : east) {
+            glTexCoord2d(uv[count].getX(), uv[count].getY());
+            count++;
             glVertex3d(v.getX(), v.getY(), v.getZ());
+        }
         glEnd();
     }
 

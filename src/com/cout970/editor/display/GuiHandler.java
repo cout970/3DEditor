@@ -26,7 +26,7 @@ public class GuiHandler implements InputHandler.IKeyboardCallback {
         InputHandler.registerKeyboardCallback(this);
         gui.addComponent(topBar.getCubeEditor());
 //        gui.addComponent(topBar.getModelTree());
-//        gui.addComponent(topBar.getTextureEditor());
+        gui.addComponent(topBar.getTextureEditor());
 //        gui.addComponent(topBar.getGroupEditor());
     }
 

@@ -2,6 +2,7 @@ package com.cout970.editor.display;
 
 import com.cout970.editor.ConfigurationFile;
 import com.cout970.editor.Editor;
+import com.cout970.editor.render.GuiRenderer;
 import com.cout970.editor.util.LoopTimer;
 import com.cout970.editor.util.Vect2i;
 import org.lwjgl.BufferUtils;
@@ -157,8 +158,7 @@ public class Display {
         glLoadIdentity();
 
         glDisable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        GuiRenderer.INSTANCE.enableBlend();
     }
 
     public static long getWindow() {

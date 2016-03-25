@@ -1,6 +1,7 @@
 package com.cout970.editor.gui;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
 /**
@@ -13,11 +14,11 @@ public class WindowPopupHandler {
     private WindowPopupHandler(){}
 
     public void showSaveCurrentProjectPopup() {
-
+    //TODO
     }
 
     public void showNewProjectConfigPopup() {
-
+    //TODO
     }
 
     public File showLoadProjectPopup() {
@@ -34,5 +35,27 @@ public class WindowPopupHandler {
 
     public void showErrorPopup(String s) {
         JOptionPane.showMessageDialog(null, s);
+    }
+
+    public File showLoadTexturePopup() {
+        JFileChooser chooser = new JFileChooser(new File("./"));
+
+        chooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                return f.getName().endsWith(".png");
+            }
+
+            @Override
+            public String getDescription() {
+                return ".png Files";
+            }
+        });
+        chooser.showOpenDialog(new JFrame());
+        File f = chooser.getSelectedFile();
+        if (f == null || !f.exists() || !f.getName().endsWith(".png")){
+            return null;
+        }
+        return f;
     }
 }

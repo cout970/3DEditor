@@ -6,6 +6,7 @@ import com.cout970.editor.gui.components.*;
 import com.cout970.editor.model.IModel;
 import com.cout970.editor.model.TechneCube;
 import com.cout970.editor.util.Color;
+import com.cout970.editor.util.Vect2d;
 import com.cout970.editor.util.Vect2i;
 import com.cout970.editor.util.Vect3d;
 
@@ -39,30 +40,36 @@ public class CubeEditWindow extends InternalWindow {
     private RotationBar cubeRotationBarY;
     private RotationBar cubeRotationBarZ;
 
+    private NumberEdit cubeTextureOffsetX;
+    private NumberEdit cubeTextureOffsetY;
+
     public CubeEditWindow(IGui gui) {
-        super(new Vect2i(238, 205), gui);
+        super(new Vect2i(240, 235), gui);
         //name
-        subParts.add(cubeName = new CubeNameTextBox(this, new Vect2i(2, 26), 234));
+        subParts.add(cubeName = new CubeNameTextBox(this, new Vect2i(3, 26), 234));
         //size
-        subParts.add(cubeSizeX = new NumberEdit(this, new Vect2i(2, 56), false));
-        subParts.add(cubeSizeY = new NumberEdit(this, new Vect2i(2 + 78, 56), false));
-        subParts.add(cubeSizeZ = new NumberEdit(this, new Vect2i(2 + 78 + 78, 56), false));
+        subParts.add(cubeSizeX = new NumberEdit(this, new Vect2i(3, 56), false));
+        subParts.add(cubeSizeY = new NumberEdit(this, new Vect2i(3 + 78, 56), false));
+        subParts.add(cubeSizeZ = new NumberEdit(this, new Vect2i(3 + 78 + 78, 56), false));
         //pos
-        subParts.add(cubePosX = new NumberEdit(this, new Vect2i(2, 86), true));
-        subParts.add(cubePosY = new NumberEdit(this, new Vect2i(2 + 78, 86), true));
-        subParts.add(cubePosZ = new NumberEdit(this, new Vect2i(2 + 78 + 78, 86), true));
+        subParts.add(cubePosX = new NumberEdit(this, new Vect2i(3, 86), true));
+        subParts.add(cubePosY = new NumberEdit(this, new Vect2i(3 + 78, 86), true));
+        subParts.add(cubePosZ = new NumberEdit(this, new Vect2i(3 + 78 + 78, 86), true));
         //rot pos
-        subParts.add(cubeRotPointX = new NumberEdit(this, new Vect2i(2, 116), true));
-        subParts.add(cubeRotPointY = new NumberEdit(this, new Vect2i(2 + 78, 116), true));
-        subParts.add(cubeRotPointZ = new NumberEdit(this, new Vect2i(2 + 78 + 78, 116), true));
+        subParts.add(cubeRotPointX = new NumberEdit(this, new Vect2i(3, 116), true));
+        subParts.add(cubeRotPointY = new NumberEdit(this, new Vect2i(3 + 78, 116), true));
+        subParts.add(cubeRotPointZ = new NumberEdit(this, new Vect2i(3 + 78 + 78, 116), true));
         //rotation
-        subParts.add(cubeRotationX = new NumberEdit(this, new Vect2i(2, 146), true));
-        subParts.add(cubeRotationY = new NumberEdit(this, new Vect2i(2, 166), true));
-        subParts.add(cubeRotationZ = new NumberEdit(this, new Vect2i(2, 186), true));
+        subParts.add(cubeRotationX = new NumberEdit(this, new Vect2i(3, 146), true));
+        subParts.add(cubeRotationY = new NumberEdit(this, new Vect2i(3, 166), true));
+        subParts.add(cubeRotationZ = new NumberEdit(this, new Vect2i(3, 186), true));
         //rotation bar
         subParts.add(cubeRotationBarX = new RotationBar(cubeRotationX));
         subParts.add(cubeRotationBarY = new RotationBar(cubeRotationY));
         subParts.add(cubeRotationBarZ = new RotationBar(cubeRotationZ));
+        //texture offset
+        subParts.add(cubeTextureOffsetX = new NumberEdit(this, new Vect2i(3, 216), false));
+        subParts.add(cubeTextureOffsetY = new NumberEdit(this, new Vect2i(3 + 78, 216), false));
     }
 
     @Override
@@ -74,6 +81,7 @@ public class CubeEditWindow extends InternalWindow {
             gui.getGuiRenderer().drawString("Cube Position", getPos().add(2, 76), new Color(0));
             gui.getGuiRenderer().drawString("Rotation Point", getPos().add(2, 106), new Color(0));
             gui.getGuiRenderer().drawString("Rotation", getPos().add(2, 136), new Color(0));
+            gui.getGuiRenderer().drawString("Texture Offset", getPos().add(2, 206), new Color(0));
 
             if (Editor.getProject().getModelTree().getSelectedModels().size() == 1 && cubeModel != Editor.getProject().getModelTree().getSelectedModels().get(0)) {
                 loadModel(Editor.getProject().getModelTree().getSelectedModels().get(0));
@@ -119,6 +127,12 @@ public class CubeEditWindow extends InternalWindow {
             cubeRotPointZ.resetChanges();
             m.setRotationPoint(new Vect3d(cubeRotPointX.getValue() * pixel, cubeRotPointY.getValue() * pixel, cubeRotPointZ.getValue() * pixel));
         }
+
+        if (cubeTextureOffsetX.hasChanged() || cubeTextureOffsetY.hasChanged()) {
+            cubeTextureOffsetX.resetChanges();
+            cubeTextureOffsetY.resetChanges();
+            m.setTextureOffset(new Vect2d(cubeTextureOffsetX.getValue(), cubeTextureOffsetY.getValue()));
+        }
     }
 
     private void loadModel(IModel iModel) {
@@ -155,6 +169,11 @@ public class CubeEditWindow extends InternalWindow {
             cubeRotPointX.resetChanges();
             cubeRotPointY.resetChanges();
             cubeRotPointZ.resetChanges();
+
+            cubeTextureOffsetX.setValue(m.getTextureOffset().getX());
+            cubeTextureOffsetY.setValue(m.getTextureOffset().getY());
+            cubeTextureOffsetX.resetChanges();
+            cubeTextureOffsetY.resetChanges();
         }
     }
 }

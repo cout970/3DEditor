@@ -25,6 +25,7 @@ public class InternalWindow implements ISizedComponent {
     protected boolean hide;
     protected int level;
     protected List<IGuiComponent> subParts;
+    protected Color backgroundColor = new Color(0xFFFFFF);
 
     public InternalWindow(Vect2i size, IGui gui) {
         this.gui = gui;
@@ -78,7 +79,7 @@ public class InternalWindow implements ISizedComponent {
             IGuiRenderer rend = gui.getGuiRenderer();
             Vect2i margin = new Vect2i(2, 2);
             rend.drawRectangle(getPos(), getPos().add(getSize()), new Color(0x666666));
-            rend.drawRectangle(getPos().add(margin), getPos().add(getSize()).sub(margin), new Color(0xFFFFFF));
+            rend.drawRectangle(getPos().add(margin), getPos().add(getSize()).sub(margin), backgroundColor);
             rend.drawRectangle(getPos().add(margin), getPos().add(getSize().sub(margin).getX() - 10, 12), new Color(0x7f7f7f));
             rend.drawRectangle(getPos().add(getSize().sub(margin).getX() - 10, 0), getPos().add(getSize().sub(margin).getX(), 12), new Color(0x5d5d5d));
             subParts.forEach(i -> i.renderBackground(gui, mouse.copy(), partialTicks));
