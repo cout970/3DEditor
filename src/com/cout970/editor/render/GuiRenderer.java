@@ -21,6 +21,18 @@ public class GuiRenderer implements IGuiRenderer {
 
     @Override
     public void drawHoveringText(List<String> textLines, Vect2i pos) {
+        int max = 0;
+        for (String textLine : textLines) {
+            max = Math.max(max, textLine.length());
+        }
+        int margin = 2;
+
+        drawRectangle(pos,
+                pos.copy().add(new Vect2i(getFontRenderer().getStringWidth("a") * max+margin*2, 8 * textLines.size()+margin*2)),
+                new Color(0xF0F0F0));
+        for (int i = 0; i < textLines.size(); i++) {
+            getFontRenderer().drawString(textLines.get(i), pos.getX()+margin, pos.getY() + i * 8+margin, 0);
+        }
 
     }
 
@@ -158,5 +170,16 @@ public class GuiRenderer implements IGuiRenderer {
     @Override
     public void disableBlend() {
         glDisable(GL_BLEND);
+    }
+
+    @Override
+    public void drawRectangle(Vect2i start, Vect2i end) {
+        TextureStorage.EMPTY.bind();
+        glBegin(GL_QUADS);
+        glVertex3d(start.getX(), start.getY(), 0.0D);
+        glVertex3d(start.getX(), end.getY(), 0.0D);
+        glVertex3d(end.getX(), end.getY(), 0.0D);
+        glVertex3d(end.getX(), start.getY(), 0.0D);
+        glEnd();
     }
 }

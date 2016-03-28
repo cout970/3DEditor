@@ -3,7 +3,10 @@ package com.cout970.editor.display;
 import com.cout970.editor.util.Vect2d;
 import com.cout970.editor.util.Vect2i;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.glfw.*;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWCharCallback;
+import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWScrollCallback;
 
 import java.nio.DoubleBuffer;
 import java.util.ArrayList;
@@ -85,15 +88,21 @@ public class InputHandler {
     }
 
     public static boolean isMouseButtonPress(MouseButton button) {
+        int id = 0;
         switch (button) {
             case LEFT:
-                return mouseButton0;
+                id = 0;
+                break;
             case RIGHT:
-                return mouseButton1;
+                id = 1;
+                break;
             case MIDDLE:
-                return mouseButton2;
+                id = 2;
+                break;
+            default:
+                return false;
         }
-        return false;
+        return glfwGetMouseButton(Display.getWindow(), id) != 0;
     }
 
     public static Vect2d getCursorPos() {
@@ -113,7 +122,7 @@ public class InputHandler {
     }
 
     //se liberan las funciones que manejan eventos, para evitar errores al reiniciar el editor
-    public static void releaseEvents(){
+    public static void releaseEvents() {
         keyCallback.release();
         mouseButtonCallback.release();
         mouseWheelCallback.release();
@@ -187,7 +196,9 @@ public class InputHandler {
     }
 
     public enum MouseButton {
-        LEFT, RIGHT, MIDDLE;
+        LEFT,
+        RIGHT,
+        MIDDLE;
 
         public static MouseButton fromID(int id) {
             switch (id) {

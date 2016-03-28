@@ -1,5 +1,6 @@
 package com.cout970.editor.model;
 
+import com.cout970.editor.Editor;
 import com.cout970.editor.render.examples.Lines;
 import com.cout970.editor.render.texture.TextureStorage;
 import com.cout970.editor.util.Direction;
@@ -28,19 +29,17 @@ public class TechneCube implements IModel {
     protected Vect3d cubePos;
     protected Vect3d cubeSize;
     protected Vect2d textureOffset;
-    protected int textureSize;
     protected boolean flipped;
     protected Vect3d rotation;
     protected Vect3d rotationPoint;
     private boolean visible = true;
 
 
-    public TechneCube(String name, Vect3d cubePos, Vect3d cubeSize, Vect2d textureOffset, int textureSize) {
+    public TechneCube(String name, Vect3d cubePos, Vect3d cubeSize, Vect2d textureOffset) {
         this.cubePos = cubePos;
         this.name = name;
         this.cubeSize = cubeSize;
         this.textureOffset = textureOffset;
-        this.textureSize = textureSize;
         this.rotationPoint = Vect3d.nullVector();
         this.rotation = Vect3d.nullVector();
     }
@@ -64,10 +63,6 @@ public class TechneCube implements IModel {
 
     public Vect2d getTextureOffset() {
         return textureOffset.copy();
-    }
-
-    public int getTextureSize() {
-        return textureSize;
     }
 
     public boolean isFlipped() {
@@ -99,11 +94,6 @@ public class TechneCube implements IModel {
     public void setTextureOffset(Vect2d textureOffset) {
         resetRenderList();
         this.textureOffset = textureOffset;
-    }
-
-    public void setTextureSize(int textureSize) {
-        resetRenderList();
-        this.textureSize = textureSize;
     }
 
     public void setRotation(Vect3d rotation) {
@@ -209,7 +199,7 @@ public class TechneCube implements IModel {
         Vertex vertex7 = new Vertex(end.getX(), end.getY(), end.getZ());
         Vertex vertex8 = new Vertex(start.getX(), end.getY(), end.getZ());
 
-        double pixel = 1d / textureSize;
+        double pixel = 1d / Editor.getProject().getTextureSize();
 
         double width = cubeSize.getX() * pixel;
         double height = cubeSize.getY() * pixel;
@@ -287,7 +277,6 @@ public class TechneCube implements IModel {
                 ", cubePos=" + cubePos +
                 ", cubeSize=" + cubeSize +
                 ", textureOffset=" + textureOffset +
-                ", textureSize=" + textureSize +
                 ", rotation=" + rotation +
                 ", rotationPoint=" + rotationPoint +
                 ", flipped=" + flipped +

@@ -44,6 +44,18 @@ public class Color {
     }
 
     public void glColor() {
-        GL11.glColor3f(getRed()/255f, getGreen()/255f, getBlue()/255f);
+        GL11.glColor3f(getRed() / 255f, getGreen() / 255f, getBlue() / 255f);
+    }
+
+    public float getR() {
+        return getRed() / 255f;
+    }
+
+    public float getG() {
+        return getGreen() / 255f;
+    }
+
+    public float getB() {
+        return getBlue() / 255f;
     }
 }

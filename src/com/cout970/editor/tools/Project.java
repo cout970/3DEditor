@@ -15,8 +15,9 @@ public class Project {
     private String previewImagePath;
     private String projectType;
     private ModelTree models;
+    private double textureSize;
 
-    public Project(String creationVersion, String autor, String dataCreation, String name, String projectName, String previewImagePath, String projectType, ModelTree models) {
+    public Project(String creationVersion, String autor, String dataCreation, String name, String projectName, String previewImagePath, String projectType, ModelTree models, int textureSize) {
         this.creationVersion = creationVersion;
         this.autor = autor;
         this.dataCreation = dataCreation;
@@ -25,6 +26,7 @@ public class Project {
         this.previewImagePath = previewImagePath;
         this.projectType = projectType;
         this.models = models;
+        this.textureSize = textureSize;
     }
 
     public String getCreationVersion() {
@@ -83,5 +85,13 @@ public class Project {
         if (models == null){
             models = new ModelTree();
         }
+    }
+
+    public double getTextureSize() {
+        return textureSize;
+    }
+
+    public void setTextureSize(int textureSize) {
+        this.textureSize = textureSize;
     }
 }

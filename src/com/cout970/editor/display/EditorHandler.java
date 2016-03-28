@@ -37,8 +37,10 @@ public class EditorHandler implements InputHandler.IMouseWheelCallback, InputHan
     private ConfigurationFile config = ConfigurationFile.INSTANCE;
     private RotationVect cameraRotation = new RotationVect(30, -45);
     private Vect3d cameraTranslation = new Vect3d(-1, -1, -2);
+    private Vect3d cameraCenterPoint = new Vect3d(0, 0, 0);
     private static Sphere sphere;
     private Cube baseBlock;
+    private double mouseWheelDistance;
 
     public EditorHandler() {
         baseBlock = new Cube(new Vect3d(-1, -1, -1), Vect3d.nullVector());
@@ -61,7 +63,10 @@ public class EditorHandler implements InputHandler.IMouseWheelCallback, InputHan
 
         TextureStorage.CUBE.bind();
         glColor4f(1, 1, 1, 1);
+        glPushMatrix();
+        glTranslated(1, 0, 1);
         baseBlock.render();
+        glPopMatrix();
 
         ModelTree tree = Editor.getProject().getModelTree();
         for (IModel m : tree.getModelsToRender()) {
@@ -97,14 +102,32 @@ public class EditorHandler implements InputHandler.IMouseWheelCallback, InputHan
         if (config.cameraController == 0) {
 
             Vect3d rotP = new Vect3d(0, 0, 2);
+            glTranslated(0, 0, mouseWheelDistance);
             glTranslated(-rotP.getX(), -rotP.getY(), -rotP.getZ());
             glRotatef(cameraRotation.getPitch(), 1, 0, 0);
             glRotatef(cameraRotation.getYaw(), 0, 1, 0);
             glTranslated(rotP.getX(), rotP.getY(), rotP.getZ());
             glTranslated(cameraTranslation.getX(), cameraTranslation.getY(), cameraTranslation.getZ());
+
         } else if (config.cameraController == 1) {
             glRotatef(cameraRotation.getPitch(), 1, 0, 0);
             glRotatef(cameraRotation.getYaw(), 0, 1, 0);
+            glTranslated(cameraTranslation.getX(), cameraTranslation.getY(), cameraTranslation.getZ());
+        } else if (config.cameraController == 2) {
+            if (Editor.getProject().getModelTree().getSelectedModels().size() == 1) {
+                cameraCenterPoint = ((TechneCube) Editor.getProject().getModelTree().getSelectedModels().get(0)).getRotationPoint();
+            }
+            glTranslated(0, 0, -2);
+            glTranslated(0, 0, mouseWheelDistance);
+            glRotatef(cameraRotation.getPitch(), 1, 0, 0);
+            glRotatef(cameraRotation.getYaw(), 0, 1, 0);
+            glTranslated(-cameraCenterPoint.getX(), -cameraCenterPoint.getY(), -cameraCenterPoint.getZ());
+        }else if(config.cameraController == 3){
+            Vect3d rotP = new Vect3d(0, 0, 2);
+            glTranslated(-rotP.getX(), -rotP.getY(), -rotP.getZ());
+            glRotatef(cameraRotation.getPitch(), 1, 0, 0);
+            glRotatef(cameraRotation.getYaw(), 0, 1, 0);
+            glTranslated(rotP.getX(), rotP.getY(), rotP.getZ());
             glTranslated(cameraTranslation.getX(), cameraTranslation.getY(), cameraTranslation.getZ());
         }
         glMatrixMode(GL_MODELVIEW);
@@ -138,11 +161,15 @@ public class EditorHandler implements InputHandler.IMouseWheelCallback, InputHan
     @Override
     public void onWheelMoves(double amount) {
         if (!Editor.getGuiHandler().getGui().blockMouse()) {
-            Vect3d a = new Vect3d(0, 0, 1);
-            a.rotateX(Math.toRadians(cameraRotation.getPitch()));
-            a.rotateY(Math.toRadians(180 - cameraRotation.getYaw()));
-            a.normalize().multiply(-amount * Planes.pixel);
-            cameraTranslation.add(a);
+            if(config.cameraController == 3){
+                Vect3d a = new Vect3d(0, 0, 1);
+                a.rotateX(Math.toRadians(cameraRotation.getPitch()));
+                a.rotateY(Math.toRadians(180 - cameraRotation.getYaw()));
+                a.normalize().multiply(-amount * Planes.pixel * config.zoomSpeed);
+                cameraTranslation.add(a);
+            }else{
+                mouseWheelDistance += amount;
+            }
         }
     }
 
@@ -214,6 +241,12 @@ public class EditorHandler implements InputHandler.IMouseWheelCallback, InputHan
                 List<IModel> list = Editor.getProject().getModelTree().getSelectedModels();
                 if (!list.isEmpty()) {
                     Editor.getProject().getModelTree().removeModels(list);
+                }
+            } else if (key == GLFW_KEY_P) {
+                if (config.cameraController == 2){
+                    config.cameraController = 0;
+                }else if (Editor.getProject().getModelTree().getSelectedModels().size() == 1){
+                    config.cameraController = 2;
                 }
             }
         }

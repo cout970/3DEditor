@@ -64,9 +64,9 @@ public class CubeEditWindow extends InternalWindow {
         subParts.add(cubeRotationY = new NumberEdit(this, new Vect2i(3, 166), true));
         subParts.add(cubeRotationZ = new NumberEdit(this, new Vect2i(3, 186), true));
         //rotation bar
-        subParts.add(cubeRotationBarX = new RotationBar(cubeRotationX));
-        subParts.add(cubeRotationBarY = new RotationBar(cubeRotationY));
-        subParts.add(cubeRotationBarZ = new RotationBar(cubeRotationZ));
+        subParts.add(cubeRotationBarX = new RotationBar(cubeRotationX, -180, 180, 360));
+        subParts.add(cubeRotationBarY = new RotationBar(cubeRotationY, -180, 180, 360));
+        subParts.add(cubeRotationBarZ = new RotationBar(cubeRotationZ, -180, 180, 360));
         //texture offset
         subParts.add(cubeTextureOffsetX = new NumberEdit(this, new Vect2i(3, 216), false));
         subParts.add(cubeTextureOffsetY = new NumberEdit(this, new Vect2i(3 + 78, 216), false));

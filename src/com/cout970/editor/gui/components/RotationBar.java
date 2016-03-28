@@ -17,6 +17,9 @@ public class RotationBar implements ISizedComponent {
     private SimpleButton button;
     private double cursor;
     protected int level;
+    protected double max;
+    protected double min;
+    protected double cycle;
 
     @Override
     public int getLevel() {
@@ -28,12 +31,14 @@ public class RotationBar implements ISizedComponent {
         this.level = level;
     }
 
-    public RotationBar(NumberEdit parent) {
+    public RotationBar(NumberEdit parent, double min, double max, double cycle) {
         this.parent = parent;
+        this.max = max;
+        this.min = min;
+        this.cycle = cycle;
         button = new SimpleButton(Vect2i.nullVector(), new Vect2i(14, 14), TextureStorage.BUTTONS, (button1, mouse, mouseButton) -> false, this::uvMapper) {
             @Override
             protected ButtonState onButtonRelease() {
-
                 return ButtonState.NORMAL;
             }
         };
@@ -67,19 +72,30 @@ public class RotationBar implements ISizedComponent {
         gui.getGuiRenderer().drawRectangle(getPos(), getPos().add(getSize()), new Color(0));
         gui.getGuiRenderer().drawRectangle(getPos().add(margin), getPos().add(getSize()).sub(margin), new Color(0x999999));
         gui.getGuiRenderer().drawRectangle(getPos().add(0, getSize().getY() / 2 - 1), getPos().add(getSize().getX(), getSize().getY() / 2 + 1), new Color(0x333333));
-        double val = parent.getValue() % 360;
-        if (val > 180) val -= 360;
-        if (val < -180) val += 360;
-        cursor = val / 180d;
+        if (cycle > 0) {
+            double val = parent.getValue() % cycle;
+            if (val > max) { val -= cycle; }
+            if (val < min) { val += cycle; }
+            cursor = val / max;
+        } else {
+            double val = parent.getValue();
+            if (val > max) { val = max; }
+            if (val < min) { val = min; }
+            cursor = (val - min) / (max - min) * 2 - 1;
+        }
         double x = getSize().getX() / 2D - 7;
         button.setPos(getPos().add((int) (cursor * x + x), 1));
         button.renderBackground(gui, mouse, partialTicks);
         if (button.getState() == AbstractStateButton.ButtonState.DOWN) {
             Vect2i disp = mouse.copy().sub(getPos());
             cursor = (double) disp.getX() / getSize().getX() * 2 - 1;
-            if (cursor > 1) cursor = 1;
-            if (cursor < -1) cursor = -1;
-            parent.setValue(cursor * 180);
+            if (cursor > 1) { cursor = 1; }
+            if (cursor < -1) { cursor = -1; }
+            if (cycle > 0) {
+                parent.setValue(cursor * max);
+            } else {
+                parent.setValue((cursor + 1) / 2 * (max - min) + min);
+            }
         }
     }
 

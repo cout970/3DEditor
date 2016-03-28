@@ -54,6 +54,10 @@ public class TopBar implements ISizedComponent {
         buttons.add(new SimpleButton(new Vect2i(32 * 4, 0), new Vect2i(size, size), TextureStorage.BUTTONS, null, "Load Texture", this::onPress, this::uvMapLoadTexture).setId(4));
         //add cube
         buttons.add(new SimpleButton(new Vect2i(32 * 5, 0), new Vect2i(size, size), TextureStorage.BUTTONS, null, "Add cube", this::onPress, this::uvMapAddCube).setId(5));
+        //add cube
+        buttons.add(new SimpleButton(new Vect2i(32 * 6, 0), new Vect2i(size, size), TextureStorage.BUTTONS, null, "Open/Close cube config", this::onPress, this::uvMapCubeConfig).setId(6));
+        //add cube
+        buttons.add(new SimpleButton(new Vect2i(32 * 7, 0), new Vect2i(size, size), TextureStorage.BUTTONS, null, "Open/Close texture view", this::onPress, this::uvMapTextureView).setId(7));
         //TODO
 //        buttons.add(new SimpleButton(new Vect2i(80 * 3 + size * 1, 0), new Vect2i(size, size), TextureStorage.BUTTONS, this::onPress, this::uvMapAddTriangle).setId(4));//triangle
 //        buttons.add(new SimpleButton(new Vect2i(80 * 3 + size * 2, 0), new Vect2i(size, size), TextureStorage.BUTTONS, this::onPress, this::uvMapAddQuad).setId(5));//quad
@@ -79,6 +83,8 @@ public class TopBar implements ISizedComponent {
             GuiController.INSTANCE.buttonAddCube();
         } else if (button.getId() == 6) {
             cubeEditor.setHide(!cubeEditor.isHide());
+        }else if (button.getId() == 7) {
+            textureEditor.setHide(!textureEditor.isHide());
         }
         return false;
     }
@@ -122,6 +128,20 @@ public class TopBar implements ISizedComponent {
         if (state == AbstractStateButton.ButtonState.NORMAL) { return new Vect2i(96, 69); }
         if (state == AbstractStateButton.ButtonState.HOVER) { return new Vect2i(96 + 32, 69); }
         if (state == AbstractStateButton.ButtonState.DOWN) { return new Vect2i(96 + 64, 69); }
+        return Vect2i.nullVector();
+    }
+
+    public Vect2i uvMapCubeConfig(AbstractStateButton.ButtonState state) {
+        if (state == AbstractStateButton.ButtonState.NORMAL) { return new Vect2i(96, 69 + 32); }
+        if (state == AbstractStateButton.ButtonState.HOVER) { return new Vect2i(96 + 32, 69 + 32); }
+        if (state == AbstractStateButton.ButtonState.DOWN) { return new Vect2i(96 + 64, 69 + 32); }
+        return Vect2i.nullVector();
+    }
+
+    public Vect2i uvMapTextureView(AbstractStateButton.ButtonState state) {
+        if (state == AbstractStateButton.ButtonState.NORMAL) { return new Vect2i(96, 69 + 32 * 2); }
+        if (state == AbstractStateButton.ButtonState.HOVER) { return new Vect2i(96 + 32, 69 + 32 * 2); }
+        if (state == AbstractStateButton.ButtonState.DOWN) { return new Vect2i(96 + 64, 69 + 32 * 2); }
         return Vect2i.nullVector();
     }
 

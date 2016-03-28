@@ -31,7 +31,7 @@ public class Editor {
         editorHandler.init();
 
         //se crea un projecto vacio
-        project = new Project("", "cout970", "", "", "", "", "", new ModelTree());
+        project = new Project("", "cout970", "", "", "", "", "", new ModelTree(), 32);
         project.init();
 
         //se ejecuta el loop de renderizado

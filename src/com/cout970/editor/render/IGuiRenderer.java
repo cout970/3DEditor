@@ -40,4 +40,6 @@ public interface IGuiRenderer {
     void enableBlend();
 
     void disableBlend();
+
+    void drawRectangle(Vect2i start, Vect2i end);
 }

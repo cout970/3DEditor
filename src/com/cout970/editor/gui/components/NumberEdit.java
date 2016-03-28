@@ -1,11 +1,14 @@
 package com.cout970.editor.gui.components;
 
+import com.cout970.editor.ConfigurationFile;
+import com.cout970.editor.display.Display;
 import com.cout970.editor.display.InputHandler;
 import com.cout970.editor.gui.IGui;
 import com.cout970.editor.gui.ISizedComponent;
 import com.cout970.editor.render.IGuiRenderer;
 import com.cout970.editor.render.texture.TextureStorage;
 import com.cout970.editor.util.Vect2i;
+import org.lwjgl.glfw.GLFW;
 
 /**
  * Created by cout970 on 13/02/2016.
@@ -23,6 +26,7 @@ public class NumberEdit implements ISizedComponent, ILockable {
     private Vect2i lastTickMouse;
     private boolean changes;
     protected int level;
+    protected double timer;
 
     @Override
     public int getLevel() {
@@ -137,6 +141,18 @@ public class NumberEdit implements ISizedComponent, ILockable {
         up.renderBackground(gui, mouse.copy(), partialTicks);
         down.renderBackground(gui, mouse.copy(), partialTicks);
         lastTickMouse = mouse.copy();
+
+        timer -= Display.getDeltaMili();
+        if (timer < 0) {
+            timer = ConfigurationFile.INSTANCE.arrowKeyTimer;
+            if (number.isFocused()) {
+                if (InputHandler.isKeyDown(GLFW.GLFW_KEY_UP)) {
+                    setValue(getValue() + 1);
+                } else if (InputHandler.isKeyDown(GLFW.GLFW_KEY_DOWN)) {
+                    setValue(getValue() - 1);
+                }
+            }
+        }
     }
 
     @Override

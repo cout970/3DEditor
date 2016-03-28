@@ -176,7 +176,7 @@ public class TechneSaveHandler implements ISaveHandler {
                 modelNode.appendChild(nameNode);
 
                 Element textureSizeNode = doc.createElement("TextureSize");
-                textureSizeNode.appendChild(doc.createTextNode("128,128"));//TODO add several models with the different texture sizes
+                textureSizeNode.appendChild(doc.createTextNode(String.format("%d,%d", (int)project.getTextureSize(), (int)project.getTextureSize())));
                 modelNode.appendChild(textureSizeNode);
 
                 modelsNode.appendChild(modelNode);
@@ -339,6 +339,8 @@ public class TechneSaveHandler implements ISaveHandler {
 
             NodeList shapes = document.getElementsByTagName("Shape");
 
+            int textureSize = 32;
+
             for (int i = 0; i < shapes.getLength(); i++) {
                 Node shape = shapes.item(i);
                 NamedNodeMap shapeAttributes = shape.getAttributes();
@@ -418,8 +420,9 @@ public class TechneSaveHandler implements ISaveHandler {
 
                     TechneCube cube = new TechneCube(shapeName,
                             cubePosition.copy().add(cubeOffset).multiply(1 / 16d).add(0.5, 1.5, 0.5),
-                            cubeSize, cubeTextureOffset.toVect2d(),
-                            (int) Math.max(textureDims != null ? textureDims.getWidth() : 32, textureDims != null ? textureDims.getHeight() : 32));
+                            cubeSize, cubeTextureOffset.toVect2d());
+
+                    textureSize = (int) Math.max(textureDims != null ? textureDims.getWidth() : 32, textureDims != null ? textureDims.getHeight() : 32);
 
                     cube.setRotation(cubeRotation);
                     cube.setFlipped(mirrored);
@@ -433,7 +436,7 @@ public class TechneSaveHandler implements ISaveHandler {
                 }
             }
             ModelTree m = new ModelTree(parts);
-            return new Project(Editor.EDITOR_VERSION, autor, creationDate, projectName, projectName, previewImagePath, "Minecraft", m);
+            return new Project(Editor.EDITOR_VERSION, autor, creationDate, projectName, projectName, previewImagePath, "Minecraft", m, textureSize);
         } catch (ZipException e) {
             throw new ModelFormatException("Model " + file + " is not a valid zip file");
         } catch (IOException e) {

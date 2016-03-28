@@ -273,6 +273,14 @@ public class TextBox implements ISizedComponent, ILockable {
         this.locked = b;
     }
 
+    public boolean isFocused() {
+        return focused;
+    }
+
+    public void setFocused(boolean focused) {
+        this.focused = focused;
+    }
+
     public enum CenterType {
         LEFT, CENTERED, RIGHT
     }

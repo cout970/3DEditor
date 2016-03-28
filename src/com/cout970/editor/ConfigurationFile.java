@@ -18,7 +18,9 @@ public class ConfigurationFile {
     public double rotationSpeedX = 20D;
     public double rotationSpeedY = 20D;
     public int cameraController = 0;
-    public int backgroundColor = 0x919191;
+    public int backgroundColor = 0xababab;
+    public double zoomSpeed = 2;
+    public double arrowKeyTimer = 60;
 
     private ConfigurationFile() {
     }
