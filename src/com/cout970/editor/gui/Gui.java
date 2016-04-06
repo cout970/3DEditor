@@ -8,6 +8,9 @@ import com.cout970.editor.render.FontRenderer;
 import com.cout970.editor.render.IFontRenderer;
 import com.cout970.editor.render.IGuiRenderer;
 import com.cout970.editor.util.Vect2i;
+import com.cout970.editor.gui.api.IGui;
+import com.cout970.editor.gui.api.IGuiComponent;
+import com.cout970.editor.gui.api.ISizedComponent;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;

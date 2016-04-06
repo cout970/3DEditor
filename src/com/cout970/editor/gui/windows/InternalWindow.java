@@ -1,9 +1,9 @@
 package com.cout970.editor.gui.windows;
 
 import com.cout970.editor.display.InputHandler;
-import com.cout970.editor.gui.IGui;
-import com.cout970.editor.gui.IGuiComponent;
-import com.cout970.editor.gui.ISizedComponent;
+import com.cout970.editor.gui.api.IGui;
+import com.cout970.editor.gui.api.IGuiComponent;
+import com.cout970.editor.gui.api.ISizedComponent;
 import com.cout970.editor.gui.TopBar;
 import com.cout970.editor.render.IGuiRenderer;
 import com.cout970.editor.util.Color;

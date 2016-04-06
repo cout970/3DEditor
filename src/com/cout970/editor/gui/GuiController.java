@@ -48,7 +48,8 @@ public class GuiController {
         lastSaveFile = WindowPopupHandler.INSTANCE.showSaveProjectFileSelector();
 
         if (lastSaveFile != null) {
-            SaveHandler.INSTANCE.save(lastSaveFile, Editor.getProject());
+            //SaveHandler.INSTANCE.save(lastSaveFile, Editor.getProject());
+            SaveHandler.INSTANCE.export("json", lastSaveFile, Editor.getProject());
         }
     }
 

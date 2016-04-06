@@ -284,6 +284,67 @@ public class TechneCube implements IModel {
                 '}';
     }
 
+    public TextureUV getUV(Direction dir) {
+
+        double pixel = 1d / Editor.getProject().getTextureSize();
+
+        double width = cubeSize.getX() * pixel;
+        double height = cubeSize.getY() * pixel;
+        double length = cubeSize.getZ() * pixel;
+
+        double offsetX = textureOffset.getX() * pixel;
+        double offsetY = textureOffset.getY() * pixel;
+
+        if (dir == Direction.WEST) {
+            return new TextureUV(
+                    offsetX + length + width,
+                    offsetY + length,
+                    offsetX + length + width + length,
+                    offsetY + length + height);
+        }
+
+        if (dir == Direction.EAST) {
+            return new TextureUV(
+                    offsetX,
+                    offsetY + length,
+                    offsetX + length,
+                    offsetY + length + height);
+        }
+
+        if (dir == Direction.DOWN) {
+            return new TextureUV(
+                    offsetX + length,
+                    offsetY,
+                    offsetX + length + width,
+                    offsetY + length);
+        }
+
+        if (dir == Direction.UP) {
+            return new TextureUV(
+                    offsetX + length + width,
+                    offsetY + length,
+                    offsetX + length + width + width,
+                    offsetY);
+        }
+
+        if (dir == Direction.NORTH) {
+            return new TextureUV(
+                    offsetX + length,
+                    offsetY + length,
+                    offsetX + length + width,
+                    offsetY + length + height);
+        }
+
+        if (dir == Direction.SOUTH) {
+            return new TextureUV(
+                    offsetX + length + width + length,
+                    offsetY + length,
+                    offsetX + length + width + length + width,
+                    offsetY + length + height);
+        }
+        return null;
+    }
+
     private class Vertex {
 
         private Vect3d pos;
@@ -323,7 +384,7 @@ public class TechneCube implements IModel {
         }
     }
 
-    private class Quad {
+    public static class Quad {
 
         protected static final float EPSILON = 0.0f / 1F;
         protected Vertex[] vertex;
@@ -366,7 +427,26 @@ public class TechneCube implements IModel {
         }
     }
 
-    enum QuadVertex {
+    public static class TextureUV {
+
+        private Vect2d start;
+        private Vect2d end;
+
+        public TextureUV(double u, double v, double u2, double v2) {
+            start = new Vect2d(u, v);
+            end = new Vect2d(u2, v2);
+        }
+
+        public Vect2d getStart() {
+            return start.copy();
+        }
+
+        public Vect2d getEnd() {
+            return end.copy();
+        }
+    }
+
+    public enum QuadVertex {
         FIRST,
         SECOND,
         THIRD,

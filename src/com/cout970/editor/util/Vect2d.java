@@ -165,4 +165,27 @@ public class Vect2d {
             return 0;
         return Math.acos(copy().dotProduct(vec) / (mag() * vec.mag()));
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) { return true; }
+        if (!(o instanceof Vect2d)) { return false; }
+
+        Vect2d vect2d = (Vect2d) o;
+
+        if (Double.compare(vect2d.x, x) != 0) { return false; }
+        return Double.compare(vect2d.y, y) == 0;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(x);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(y);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 }

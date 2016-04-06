@@ -1,4 +1,4 @@
-package com.cout970.editor.gui;
+package com.cout970.editor.gui.api;
 
 import com.cout970.editor.display.InputHandler;
 import com.cout970.editor.util.Vect2i;

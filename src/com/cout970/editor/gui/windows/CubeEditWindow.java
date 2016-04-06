@@ -1,7 +1,7 @@
 package com.cout970.editor.gui.windows;
 
 import com.cout970.editor.Editor;
-import com.cout970.editor.gui.IGui;
+import com.cout970.editor.gui.api.IGui;
 import com.cout970.editor.gui.components.*;
 import com.cout970.editor.model.IModel;
 import com.cout970.editor.model.TechneCube;

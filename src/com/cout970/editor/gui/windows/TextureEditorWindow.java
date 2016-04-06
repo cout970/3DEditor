@@ -2,7 +2,7 @@ package com.cout970.editor.gui.windows;
 
 import com.cout970.editor.Editor;
 import com.cout970.editor.display.InputHandler;
-import com.cout970.editor.gui.IGui;
+import com.cout970.editor.gui.api.IGui;
 import com.cout970.editor.gui.TopBar;
 import com.cout970.editor.gui.components.AbstractButton;
 import com.cout970.editor.gui.components.AbstractStateButton;

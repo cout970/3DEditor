@@ -290,4 +290,30 @@ public class Vect3d {
         z = Math.toRadians(z);
         return this;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) { return true; }
+        if (!(o instanceof Vect3d)) { return false; }
+
+        Vect3d vect3d = (Vect3d) o;
+
+        if (Double.compare(vect3d.x, x) != 0) { return false; }
+        if (Double.compare(vect3d.y, y) != 0) { return false; }
+        return Double.compare(vect3d.z, z) == 0;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(x);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(y);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(z);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 }

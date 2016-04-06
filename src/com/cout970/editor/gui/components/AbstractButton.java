@@ -2,8 +2,8 @@ package com.cout970.editor.gui.components;
 
 
 import com.cout970.editor.display.InputHandler;
-import com.cout970.editor.gui.IGui;
-import com.cout970.editor.gui.IGuiComponent;
+import com.cout970.editor.gui.api.IGui;
+import com.cout970.editor.gui.api.IGuiComponent;
 import com.cout970.editor.render.IGuiRenderer;
 import com.cout970.editor.util.Vect2i;
 
