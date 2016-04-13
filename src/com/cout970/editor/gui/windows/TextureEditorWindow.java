@@ -201,8 +201,8 @@ public class TextureEditorWindow extends ResizableWindows {
     }
 
     private void drawRectangle(Vect2i start, Vect2i end, Color color) {
-        if (start.getX() >= getBoxPos().getX() + getBoxSize().getX()) { return; }
-        if (start.getY() >= getBoxPos().getY() + getBoxSize().getY()) { return; }
+        if (start.getX() > getBoxPos().getX() + getBoxSize().getX()) { return; }
+        if (start.getY() > getBoxPos().getY() + getBoxSize().getY()) { return; }
         if (end.getX() < getBoxPos().getX()) { return; }
         if (end.getY() < getBoxPos().getY()) { return; }
         glColor4f(color.getR(), color.getG(), color.getB(), 0.5f);

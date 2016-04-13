@@ -27,9 +27,10 @@ public class TextureManager implements ITextureLoader {
     private Map<ResourceReference, ITexture> registeredTextures;
     private static int maxTextureSize = -1;
     private int loadedTexture;
+    private long lastModified;
 
     public TextureManager() {
-        textureFiles = new LinkedList<ResourceReference>();
+        textureFiles = new LinkedList<>();
         registeredTextures = new HashMap<>();
     }
 
@@ -37,6 +38,7 @@ public class TextureManager implements ITextureLoader {
         registeredTextures.put(file, texture);
     }
 
+    //se carga o se obtiene una textura a partir de un archivo
     @Override
     public ITexture getTexture(ResourceReference path) {
         if (registeredTextures.containsKey(path)) {
@@ -45,6 +47,11 @@ public class TextureManager implements ITextureLoader {
         return loadTexture(path, path.getFileName());
     }
 
+    public void bind(ITextureSprite tex) {
+        bind(tex.getParent());
+    }
+
+    //se hace bind de una textura si esta no esta ya bindeada
     public void bind(ITexture tex) {
         if (tex.getTextureID() != loadedTexture) {
             loadedTexture = tex.getTextureID();
@@ -52,15 +59,13 @@ public class TextureManager implements ITextureLoader {
         }
     }
 
-    public void bind(ITextureSprite tex) {
-        bind(tex.getParent());
-    }
-
+    //se bind de una textura siempre
     public void bindForced(ITexture tex) {
         loadedTexture = tex.getTextureID();
         glBindTexture(GL_TEXTURE_2D, tex.getTextureID());
     }
 
+    //se carga una textura simple a partir de un archivo
     @Override
     public ITexture loadTexture(ResourceReference resourceFile, String textureName) {
         ByteBuffer buff;
@@ -77,6 +82,7 @@ public class TextureManager implements ITextureLoader {
         }
     }
 
+    //se carga una textura simple
     @Override
     public ITexture loadTexture(ByteBuffer imageBuffer, String textureName) {
 
@@ -117,6 +123,7 @@ public class TextureManager implements ITextureLoader {
         return texture;
     }
 
+    //se crea un atlas de texturas
     @Override
     public ITextureAtlas generateTextureAtlas(ResourceReference resource, String name) {
         searchForTextureFiles(resource);
@@ -125,6 +132,7 @@ public class TextureManager implements ITextureLoader {
         return tex;
     }
 
+    //se crea un buider para poder juntar las texturas en el atlas
     private AtlasBuilder createAtlas() {
         int size = getMaxTextureSize();
         ByteBuffer buff;
@@ -136,6 +144,7 @@ public class TextureManager implements ITextureLoader {
         return atlas;
     }
 
+    //se buscan archivos en un directorio
     private void searchForTextureFiles(ResourceReference directory) {
         File root = directory.getFile();
 
@@ -161,12 +170,12 @@ public class TextureManager implements ITextureLoader {
         }
     }
 
+    //crea un atlas de texturas a partir de los archivos de una carpeta
     private ITextureAtlas combineTextures(List<ResourceReference> files, String name) {
 
         AtlasBuilder atlas = createAtlas();
 
-        // loading textures from the files
-
+        // carga las texture de los archivos
         for (ResourceReference res : files) {
             try {
                 ByteBuffer imageBuffer = resourceToBuffer(res, -1);
@@ -176,6 +185,8 @@ public class TextureManager implements ITextureLoader {
                 IntBuffer wBuf = BufferUtils.createIntBuffer(1);
                 IntBuffer hBuf = BufferUtils.createIntBuffer(1);
                 IntBuffer comp = BufferUtils.createIntBuffer(1);
+
+                //obtiene los datos de la imagen
                 if (stbi_info_from_memory(imageBuffer, wBuf, hBuf, comp) == 0) {
                     throw new RuntimeException("Failed to read image information: " + stbi_failure_reason());
                 }
@@ -183,7 +194,7 @@ public class TextureManager implements ITextureLoader {
                 w = wBuf.get(0);
                 h = hBuf.get(0);
 
-                // Decode the image
+                // carga loa imagen
                 image = stbi_load_from_memory(imageBuffer, wBuf, hBuf, comp, 4);
                 if (image == null) { throw new RuntimeException("Failed to load image: " + stbi_failure_reason()); }
 
@@ -196,8 +207,7 @@ public class TextureManager implements ITextureLoader {
             }
         }
 
-        // registering the texture with OpenGL
-
+        //se crea la textura del atlas
         int texID = glGenTextures();
 
         TextureAtlas texture = new TextureAtlas(texID, name, atlas.getSizeX(), atlas.getSizeY(), atlas);
@@ -208,13 +218,13 @@ public class TextureManager implements ITextureLoader {
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
         glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, atlas.getSizeX(), atlas.getSizeY(), 0, GL_RGBA,
                 GL_UNSIGNED_BYTE, atlas.getTexture());
 
-        // combining all the textures together
-
+        // se combinan las texturas con el atlas
         for (SpriteSlot slot : atlas.getTextureSlots()) {
 
             SpriteTextureBuffer sprite = slot.getSpriteTextureBuffer();
@@ -222,15 +232,16 @@ public class TextureManager implements ITextureLoader {
                     sprite.getSizeY(), GL_RGBA, GL_UNSIGNED_BYTE, sprite.getTexture());
         }
 
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         return texture;
     }
 
+    //se obtiene el tamano maximo de textura que soporta la gpu
     public int getMaxTextureSize() {
         if (maxTextureSize != -1) {
             return maxTextureSize;
@@ -248,6 +259,7 @@ public class TextureManager implements ITextureLoader {
         return -1;
     }
 
+    //carga en un buffer el contenido del archivo
     public static ByteBuffer resourceToBuffer(ResourceReference resource, int bufferSize) throws IOException {
         ByteBuffer buffer;
 
@@ -273,15 +285,14 @@ public class TextureManager implements ITextureLoader {
             }
 
             try {
-                ReadableByteChannel rbc = Channels.newChannel(source);
-                try {
+                try (ReadableByteChannel rbc = Channels.newChannel(source)) {
                     while (true) {
                         int bytes = rbc.read(buffer);
                         if (bytes == -1) { break; }
-                        if (buffer.remaining() == 0) { buffer = resizeBuffer(buffer, buffer.capacity() * 2); }
+                        if (buffer.remaining() == 0) {
+                            buffer = TextureManager.INSTANCE.resizeBuffer(buffer, buffer.capacity() * 2);
+                        }
                     }
-                } finally {
-                    rbc.close();
                 }
             } finally {
                 source.close();
@@ -292,10 +303,23 @@ public class TextureManager implements ITextureLoader {
         return buffer;
     }
 
-    private static ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity) {
+    //aumenta el tamano del buffer
+    private ByteBuffer resizeBuffer(ByteBuffer buffer, int newCapacity) {
         ByteBuffer newBuffer = createByteBuffer(newCapacity);
         buffer.flip();
         newBuffer.put(buffer);
         return newBuffer;
+    }
+
+    //recarga la texture del modelo si esta ha cambiado
+    public void update() {
+
+        if (TextureStorage.MODEL_TEXTURE instanceof ITextureReloadable) {
+            ITextureReloadable tex = (ITextureReloadable) TextureStorage.MODEL_TEXTURE;
+            if (tex.getResourceReference().getFile().lastModified() != lastModified) {
+                TextureStorage.MODEL_TEXTURE = tex.reload();
+                lastModified = tex.getResourceReference().getFile().lastModified();
+            }
+        }
     }
 }

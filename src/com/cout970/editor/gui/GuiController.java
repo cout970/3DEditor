@@ -5,6 +5,7 @@ import com.cout970.editor.ModelTree;
 import com.cout970.editor.export.SaveHandler;
 import com.cout970.editor.model.IModel;
 import com.cout970.editor.model.TechneCube;
+import com.cout970.editor.render.texture.ExternalResourceReference;
 import com.cout970.editor.render.texture.TextureStorage;
 import com.cout970.editor.tools.Project;
 import com.cout970.editor.util.Vect2d;
@@ -21,22 +22,30 @@ public class GuiController {
     private File lastSaveFile;
 
     public void buttonNewProject() {
-        WindowPopupHandler.INSTANCE.showSaveCurrentProjectPopup();
-        WindowPopupHandler.INSTANCE.showNewProjectConfigPopup();
-        Project project = new Project("", "cout970", "", "", "", "", "", new ModelTree(), TextureStorage.MODEL_TEXTURE.getTextureSizeX());
-        project.init();
-        Editor.setProject(project);
+        if(WindowPopupHandler.INSTANCE.showSaveCurrentProjectPopup()) {
+            WindowPopupHandler.INSTANCE.showNewProjectConfigPopup();
+            Project project = new Project("", "cout970", "", "", "", "", "", new ModelTree(), TextureStorage.MODEL_TEXTURE.getTextureSizeX());
+            project.init();
+            Editor.setProject(project);
+        }
     }
 
     public void buttonLoadProject() {
-        WindowPopupHandler.INSTANCE.showSaveCurrentProjectPopup();
-        lastSaveFile = WindowPopupHandler.INSTANCE.showLoadProjectPopup();
-        Project p = SaveHandler.INSTANCE.load(lastSaveFile);
-        Editor.setProject(p);
+        if(WindowPopupHandler.INSTANCE.showSaveCurrentProjectPopup()) {
+            lastSaveFile = WindowPopupHandler.INSTANCE.showLoadProjectPopup();
+            if (lastSaveFile != null) {
+                Project p = SaveHandler.INSTANCE.load(lastSaveFile);
+                if (p != null) {
+                    Editor.setProject(p);
+                } else {
+                    WindowPopupHandler.INSTANCE.showErrorPopup("Error trying to load a project in: " + lastSaveFile.getAbsolutePath());
+                }
+            }
+        }
     }
 
     public void buttonSaveProject() {
-        if (lastSaveFile == null) {
+        if (lastSaveFile == null || !lastSaveFile.getName().endsWith(".tcn")) {
             lastSaveFile = WindowPopupHandler.INSTANCE.showSaveProjectFileSelector();
         }
         if (lastSaveFile != null) {
@@ -48,8 +57,13 @@ public class GuiController {
         lastSaveFile = WindowPopupHandler.INSTANCE.showSaveProjectFileSelector();
 
         if (lastSaveFile != null) {
-            //SaveHandler.INSTANCE.save(lastSaveFile, Editor.getProject());
-            SaveHandler.INSTANCE.export("json", lastSaveFile, Editor.getProject());
+            if(lastSaveFile.getName().endsWith(".obj")){
+                SaveHandler.INSTANCE.export("obj", lastSaveFile, Editor.getProject());
+            }else if(lastSaveFile.getName().endsWith(".json")){
+                SaveHandler.INSTANCE.export("json", lastSaveFile, Editor.getProject());
+            }else {
+                SaveHandler.INSTANCE.save(lastSaveFile, Editor.getProject());
+            }
         }
     }
 
@@ -64,7 +78,7 @@ public class GuiController {
     public void buttonLoadTexture() {
         File texture = WindowPopupHandler.INSTANCE.showLoadTexturePopup();
         if (texture != null) {
-            TextureStorage.loadModelTexture(texture);
+            TextureStorage.loadModelTexture(new ExternalResourceReference(texture));
             Editor.getProject().setTextureSize(TextureStorage.MODEL_TEXTURE.getTextureSizeX());
         }
     }

@@ -3,6 +3,7 @@ package com.cout970.editor.display;
 import com.cout970.editor.ConfigurationFile;
 import com.cout970.editor.Editor;
 import com.cout970.editor.render.GuiRenderer;
+import com.cout970.editor.render.texture.TextureManager;
 import com.cout970.editor.util.LoopTimer;
 import com.cout970.editor.util.Vect2i;
 import org.lwjgl.BufferUtils;
@@ -69,6 +70,7 @@ public class Display {
             //renderiza la escena y la interfaz
             Editor.getEditorHandler().update();
             Editor.getGuiHandler().update();
+            TextureManager.INSTANCE.update();
 
             //se intercambian los buffers
             glFlush();

@@ -2,7 +2,6 @@ package com.cout970.editor.render.texture;
 
 import com.cout970.editor.Editor;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -50,11 +49,11 @@ public class TextureStorage {
         MODEL_TEXTURE = MISSING_TEXTURE;
     }
 
-    public static void loadModelTexture(File file) {
+    public static void loadModelTexture(ResourceReference ref) {
 
         try {
             ByteBuffer buffer;
-            FileInputStream fis = new FileInputStream(file);
+            FileInputStream fis = new FileInputStream(ref.getFile());
             FileChannel fc = fis.getChannel();
 
             buffer = createByteBuffer((int) fc.size() + 1);
@@ -66,7 +65,8 @@ public class TextureStorage {
             fis.close();
             fc.close();
             buffer.rewind();
-            MODEL_TEXTURE = TextureManager.INSTANCE.loadTexture(buffer, file.getName());
+            ITexture tex = TextureManager.INSTANCE.loadTexture(buffer, ref.getFileName());
+            MODEL_TEXTURE = new TextureReloadable(tex, ref);
         } catch (Exception ignored) {
             ignored.printStackTrace();
         }

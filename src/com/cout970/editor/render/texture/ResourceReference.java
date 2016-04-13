@@ -85,6 +85,4 @@ public class ResourceReference {
             return false;
         return true;
     }
-
-
 }

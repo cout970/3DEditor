@@ -27,7 +27,7 @@ public class JsonExportHandler implements IExportHandler {
 
             JsonObject textures = new JsonObject();
             textures.addProperty("tex", TextureStorage.MODEL_TEXTURE.getTextureName());
-            textures.addProperty("particle", "#tex");
+            textures.addProperty("particle", TextureStorage.MODEL_TEXTURE.getTextureName());
             root.add("textures", textures);
 
             JsonArray elements = new JsonArray();
